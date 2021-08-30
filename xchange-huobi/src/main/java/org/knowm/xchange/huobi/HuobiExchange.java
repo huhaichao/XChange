@@ -4,6 +4,7 @@ import java.io.IOException;
 import org.knowm.xchange.BaseExchange;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.huobi.dto.marketdata.HuobiAsset;
 import org.knowm.xchange.huobi.dto.marketdata.HuobiAssetPair;
@@ -20,6 +21,11 @@ public class HuobiExchange extends BaseExchange implements Exchange {
     this.marketDataService = new HuobiMarketDataService(this);
     this.tradeService = new HuobiTradeService(this);
     this.accountService = new HuobiAccountService(this);
+  }
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.HUOBI;
   }
 
   @Override

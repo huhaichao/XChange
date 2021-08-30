@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import org.knowm.xchange.BaseExchange;
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.binance.dto.account.AssetDetail;
 import org.knowm.xchange.binance.dto.meta.exchangeinfo.BinanceExchangeInfo;
 import org.knowm.xchange.binance.dto.meta.exchangeinfo.Filter;
@@ -43,6 +44,11 @@ public class BinanceExchange extends BaseExchange {
     this.marketDataService = new BinanceMarketDataService(this, binance, getResilienceRegistries());
     this.tradeService = new BinanceTradeService(this, binance, getResilienceRegistries());
     this.accountService = new BinanceAccountService(this, binance, getResilienceRegistries());
+  }
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.BINANCE;
   }
 
   public SynchronizedValueFactory<Long> getTimestampFactory() {

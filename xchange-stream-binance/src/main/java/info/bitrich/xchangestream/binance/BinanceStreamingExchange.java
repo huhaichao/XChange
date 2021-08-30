@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.binance.BinanceAuthenticated;
 import org.knowm.xchange.binance.BinanceExchange;
 import org.knowm.xchange.binance.service.BinanceMarketDataService;
@@ -52,6 +54,11 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
     if (userHigherFrequency) {
       orderBookUpdateFrequencyParameter = "@100ms";
     }
+  }
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.BINANCESTREAM;
   }
 
   /**

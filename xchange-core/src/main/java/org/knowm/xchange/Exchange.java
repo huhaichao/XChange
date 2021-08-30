@@ -25,6 +25,10 @@ import si.mazi.rescu.SynchronizedValueFactory;
  */
 public interface Exchange {
 
+  default  ExchangeType getExchangeType(){
+    throw new NotYetImplementedForExchangeException("not implemented exchange type");
+  }
+
   /** @return The ExchangeSpecification in use for this exchange */
   ExchangeSpecification getExchangeSpecification();
 
