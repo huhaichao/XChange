@@ -13,6 +13,7 @@ import org.knowm.xchange.dto.account.Balance;
 import org.knowm.xchange.dto.account.FundingRecord;
 import org.knowm.xchange.dto.account.FundingRecord.Status;
 import org.knowm.xchange.dto.account.Wallet;
+import org.knowm.xchange.dto.marketdata.Kline;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.marketdata.Trades.TradeSortType;
 import org.knowm.xchange.dto.meta.*;
@@ -438,5 +439,22 @@ public class HuobiAdapters {
       default:
         return null;
     }
+  }
+
+  public static List<Kline> adaptKlines(HuobiKline[] klines) {
+     return Arrays.stream(klines)
+            .map(
+              kline ->
+                new Kline.Builder()
+                        .id(kline.getId())
+                        .open(kline.getOpen())
+                        .close(kline.getClose())
+                        .high(kline.getHigh())
+                        .low(kline.getLow())
+                        .amount(kline.getAmount())
+                        .vol(kline.getVol())
+                        .count(kline.getCount())
+              .build())
+            .collect(Collectors.toList());
   }
 }

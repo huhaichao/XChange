@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trades;
+import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.exceptions.NotAvailableFromExchangeException;
 import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
@@ -38,6 +36,14 @@ public interface MarketDataService extends BaseService {
    * @throws IOException - Indication that a networking error occurred while fetching JSON data
    */
   default Ticker getTicker(CurrencyPair currencyPair, Object... args) throws IOException {
+    throw new NotYetImplementedForExchangeException("getTicker");
+  }
+
+  default Kline getKline(CurrencyPair currencyPair, Object... args) throws IOException {
+    throw new NotYetImplementedForExchangeException("getTicker");
+  }
+
+  default Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 

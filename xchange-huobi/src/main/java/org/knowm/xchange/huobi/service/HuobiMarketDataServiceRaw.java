@@ -3,9 +3,9 @@ package org.knowm.xchange.huobi.service;
 import java.io.IOException;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.huobi.HuobiUtils;
 import org.knowm.xchange.huobi.dto.marketdata.*;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiKline;
 import org.knowm.xchange.huobi.dto.marketdata.results.*;
 
 public class HuobiMarketDataServiceRaw extends HuobiBaseService {

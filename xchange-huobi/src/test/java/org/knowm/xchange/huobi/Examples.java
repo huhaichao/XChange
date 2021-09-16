@@ -4,7 +4,7 @@ import java.util.Arrays;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.huobi.dto.marketdata.KlineInterval;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.huobi.service.HuobiMarketDataService;
 
 public class Examples {

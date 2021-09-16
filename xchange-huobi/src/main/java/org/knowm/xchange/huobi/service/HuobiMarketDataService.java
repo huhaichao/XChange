@@ -7,10 +7,7 @@ import java.util.stream.Collectors;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
-import org.knowm.xchange.dto.marketdata.Trades;
+import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.huobi.HuobiAdapters;
@@ -28,6 +25,19 @@ public class HuobiMarketDataService extends HuobiMarketDataServiceRaw implements
   @Override
   public Ticker getTicker(CurrencyPair currencyPair, Object... args) throws IOException {
     return HuobiAdapters.adaptTicker(getHuobiTicker(currencyPair), currencyPair);
+  }
+
+  @Override
+  public Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
+    KlineInterval klineInterval = null ;
+    Integer limit = null ;
+    if (args != null && args.length ==2){
+
+    }else {
+      throw new ExchangeException("args can not be null");
+    }
+    List<Kline> klineList = HuobiAdapters.adaptKlines(getKlines(currencyPair,klineInterval,limit));
+    return new Klines(klineList,currencyPair,klineInterval,limit);
   }
 
   @Override
