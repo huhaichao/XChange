@@ -10,22 +10,26 @@ public final class Kline implements Serializable {
 
     private final long id;
     private final long count;
+    private final long openTime;
     private final BigDecimal open;
     private final BigDecimal close;
     private final BigDecimal low;
     private final BigDecimal high;
     private final BigDecimal amount;
     private final BigDecimal vol;
+    private final long closeTime;
 
-    public Kline(long id, long count, BigDecimal open, BigDecimal close, BigDecimal low, BigDecimal high, BigDecimal amount, BigDecimal vol) {
+    public Kline(long id, long count, long openTime, BigDecimal open, BigDecimal close, BigDecimal low, BigDecimal high, BigDecimal amount, BigDecimal vol, long closeTime) {
         this.id = id;
         this.count = count;
+        this.openTime = openTime;
         this.open = open;
         this.close = close;
         this.low = low;
         this.high = high;
         this.amount = amount;
         this.vol = vol;
+        this.closeTime = closeTime;
     }
 
     public long getId() {
@@ -60,36 +64,48 @@ public final class Kline implements Serializable {
         return vol;
     }
 
+    public long getOpenTime() {
+        return openTime;
+    }
+
+    public long getCloseTime() {
+        return closeTime;
+    }
+
     @Override
     public String toString() {
-        return "Kline [" +
+        return "Kline {"+
                 "id=" + id +
                 ", count=" + count +
+                ", openTime=" + openTime +
                 ", open=" + open +
                 ", close=" + close +
                 ", low=" + low +
                 ", high=" + high +
                 ", amount=" + amount +
                 ", vol=" + vol +
-                ']';
+                ", closeTime=" + closeTime +
+                '}';
     }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         private  long id;
         private  long count;
+        private  long openTime;
         private  BigDecimal open;
         private  BigDecimal close;
         private  BigDecimal low;
         private  BigDecimal high;
         private  BigDecimal amount;
         private  BigDecimal vol;
+        private  long closeTime;
 
         private boolean isBuilt = false;
 
         public  Kline  build(){
-           validateState();
-            Kline kline = new Kline(id,count,open,close,low,high,amount,vol);
+            validateState();
+            Kline kline = new Kline(id,count,openTime,open,close,low,high,amount,vol,closeTime);
             isBuilt = true;
             return kline;
         }
@@ -138,6 +154,16 @@ public final class Kline implements Serializable {
 
         public Builder vol(BigDecimal vol) {
             this.vol = vol;
+            return this;
+        }
+
+        public Builder openTime(long openTime) {
+            this.openTime = openTime;
+            return this;
+        }
+
+        public Builder closeTime(long closeTime) {
+            this.closeTime = closeTime;
             return this;
         }
 

@@ -39,10 +39,6 @@ public interface MarketDataService extends BaseService {
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 
-  default Kline getKline(CurrencyPair currencyPair, Object... args) throws IOException {
-    throw new NotYetImplementedForExchangeException("getTicker");
-  }
-
   default Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
     throw new NotYetImplementedForExchangeException("getTicker");
   }

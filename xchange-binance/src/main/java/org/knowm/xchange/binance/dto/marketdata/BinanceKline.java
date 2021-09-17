@@ -3,6 +3,7 @@ package org.knowm.xchange.binance.dto.marketdata;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 
 public final class BinanceKline {
 

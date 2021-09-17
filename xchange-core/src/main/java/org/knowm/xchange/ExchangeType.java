@@ -7,7 +7,11 @@ public enum ExchangeType {
     HUOBI("HUOBI",1),
     HUOBISTREAM("HUOBISTREAM",2),
     BINANCE("BINANCE",3),
-    BINANCESTREAM("BINANCESTREAM",4);
+    BINANCESTREAM("BINANCESTREAM",4),
+    OKEX("OKEX",5),
+    OKEXSTREAM("OKEXSTREAM",6),
+    OKCOIN("OKCOIN",7),
+    OKCOINSTREAM("OKCOINSTREAM",8);
 
     ExchangeType(String exchangeName, Integer exchangeType) {
         this.exchangeName = exchangeName;

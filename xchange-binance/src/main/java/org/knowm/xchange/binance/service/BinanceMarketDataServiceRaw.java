@@ -14,9 +14,9 @@ import org.knowm.xchange.binance.dto.marketdata.BinanceOrderbook;
 import org.knowm.xchange.binance.dto.marketdata.BinancePrice;
 import org.knowm.xchange.binance.dto.marketdata.BinancePriceQuantity;
 import org.knowm.xchange.binance.dto.marketdata.BinanceTicker24h;
-import org.knowm.xchange.binance.dto.marketdata.KlineInterval;
 import org.knowm.xchange.client.ResilienceRegistries;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.utils.StreamUtils;
 
 public class BinanceMarketDataServiceRaw extends BinanceBaseService {
@@ -62,7 +62,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
   }
 
   public List<BinanceKline> klines(
-      CurrencyPair pair, KlineInterval interval, Integer limit, Long startTime, Long endTime)
+          CurrencyPair pair, KlineInterval interval, Integer limit, Long startTime, Long endTime)
       throws IOException {
     List<Object[]> raw =
         decorateApiCall(

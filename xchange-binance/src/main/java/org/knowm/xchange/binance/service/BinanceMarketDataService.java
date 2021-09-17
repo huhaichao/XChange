@@ -9,17 +9,12 @@ import org.knowm.xchange.binance.BinanceAuthenticated;
 import org.knowm.xchange.binance.BinanceErrorAdapter;
 import org.knowm.xchange.binance.BinanceExchange;
 import org.knowm.xchange.binance.dto.BinanceException;
-import org.knowm.xchange.binance.dto.marketdata.BinanceAggTrades;
-import org.knowm.xchange.binance.dto.marketdata.BinanceOrderbook;
-import org.knowm.xchange.binance.dto.marketdata.BinancePriceQuantity;
-import org.knowm.xchange.binance.dto.marketdata.BinanceTicker24h;
+import org.knowm.xchange.binance.dto.marketdata.*;
 import org.knowm.xchange.client.ResilienceRegistries;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
-import org.knowm.xchange.dto.marketdata.Trades;
+import org.knowm.xchange.dto.marketdata.*;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.dto.marketdata.Trades.TradeSortType;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.exceptions.ExchangeException;
@@ -124,6 +119,50 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
+  }
+
+  @Override
+  public Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
+    KlineInterval klineInterval = null ;
+    Integer limit = null ;
+    Long startTime = null;
+    Long endTime  = null;
+    if (args == null || args.length <2) {
+      throw new ExchangeException("args can not be null or length less than 2");
+    }
+    if(args[0] instanceof KlineInterval){
+      klineInterval = (KlineInterval)args[0];
+    }else {
+      throw new ExchangeException("args[0] is not be KlineInterval");
+    }
+    limit = (Integer)args[1];
+    if(args.length == 4){
+      if(args[2] != null){
+        startTime = (Long)args[2];
+      }
+      if(args[3] != null){
+        endTime = (Long)args[2];
+      }
+    }
+
+    List<BinanceKline> binanceKlines = klines(currencyPair,klineInterval,limit,startTime,endTime);
+
+    return new Klines(binanceKlines.stream().map(binanceKline -> {
+      return new Kline.Builder()
+              .open(binanceKline.getOpenPrice())
+              .close(binanceKline.getClosePrice())
+              .high(binanceKline.getHighPrice())
+              .low(binanceKline.getLowPrice())
+              .amount(binanceKline.getVolume())
+              .vol(binanceKline.getQuoteAssetVolume())
+              .count(binanceKline.getNumberOfTrades())
+              .build();
+    }).collect(Collectors.toList())
+            ,currencyPair
+            ,klineInterval
+            ,limit
+            ,startTime
+            ,endTime);
   }
 
   private <T extends Number> T tradesArgument(

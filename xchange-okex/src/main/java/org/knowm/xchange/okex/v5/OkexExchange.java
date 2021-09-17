@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.knowm.xchange.BaseExchange;
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.client.ResilienceRegistries;
 import org.knowm.xchange.okex.v5.dto.marketdata.OkexCurrency;
 import org.knowm.xchange.okex.v5.dto.marketdata.OkexInstrument;
@@ -21,6 +22,11 @@ import si.mazi.rescu.SynchronizedValueFactory;
 public class OkexExchange extends BaseExchange {
 
   private static ResilienceRegistries RESILIENCE_REGISTRIES;
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.OKEX;
+  }
 
   /** Adjust host parameters depending on exchange specific parameters */
   private static void concludeHostParams(ExchangeSpecification exchangeSpecification) {
