@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
+import org.knowm.xchange.dto.marketdata.Klines;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 
@@ -19,6 +21,14 @@ public class HuobiPublicApiIntegration {
   @Before
   public void setup() {
     exchange = ExchangeFactory.INSTANCE.createExchange(HuobiExchange.class);
+  }
+
+  @Test
+  public void getKlinsTest() throws Exception {
+    MarketDataService marketDataService = exchange.getMarketDataService();
+    Klines klines = marketDataService.getKlines(CurrencyPair.BTC_USDT, KlineInterval.m5, 10);
+    assertThat(klines).isNotNull();
+    assertThat(klines.getKlines().size()).isEqualTo(10);
   }
 
   @Test

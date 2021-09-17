@@ -32,7 +32,16 @@ public class HuobiMarketDataService extends HuobiMarketDataServiceRaw implements
     KlineInterval klineInterval = null ;
     Integer limit = null ;
     if (args != null && args.length ==2){
-
+       if(args[0] instanceof KlineInterval){
+         klineInterval = (KlineInterval)args[0];
+       }else {
+         throw new ExchangeException("args[0] is not be KlineInterval");
+       }
+      if(args[1] instanceof Integer){
+        limit = (Integer)args[1];
+      }else {
+        throw new ExchangeException("args[1] is not be Integer");
+      }
     }else {
       throw new ExchangeException("args can not be null");
     }
