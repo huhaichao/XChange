@@ -2,6 +2,7 @@ package org.knowm.xchange.okcoin;
 
 import org.knowm.xchange.BaseExchange;
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.okcoin.service.OkCoinAccountService;
 import org.knowm.xchange.okcoin.service.OkCoinFuturesAccountService;
 import org.knowm.xchange.okcoin.service.OkCoinFuturesMarketDataService;
@@ -11,6 +12,11 @@ import org.knowm.xchange.okcoin.service.OkCoinTradeService;
 import si.mazi.rescu.SynchronizedValueFactory;
 
 public class OkCoinExchange extends BaseExchange {
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.OKCOIN;
+  }
 
   /** Adjust host parameters depending on exchange specific parameters */
   private static void concludeHostParams(ExchangeSpecification exchangeSpecification) {

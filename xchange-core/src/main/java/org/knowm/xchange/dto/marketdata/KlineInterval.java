@@ -3,28 +3,32 @@ package org.knowm.xchange.dto.marketdata;
 import static java.util.concurrent.TimeUnit.*;
 
 public enum KlineInterval {
-  m1("1min", MINUTES.toMillis(1)),
-  m5("5min", MINUTES.toMillis(5)),
-  m15("15min", MINUTES.toMillis(15)),
-  m30("30min", MINUTES.toMillis(30)),
-  h1("60min", HOURS.toMillis(1)),
-  h4("4hour", HOURS.toMillis(4)),
+  m1("1min", MINUTES.toSeconds(1)),
+  m3("3min", MINUTES.toSeconds(3)),
+  m5("5min", MINUTES.toSeconds(5)),
+  m15("15min", MINUTES.toSeconds(15)),
+  m30("30min", MINUTES.toSeconds(30)),
 
-  d1("1day", DAYS.toMillis(1)),
-  w1("1week", DAYS.toMillis(7)),
-  M1("1mon", DAYS.toMillis(30)),
-  Y1("1year", DAYS.toMillis(365));
+  h1("60min", HOURS.toSeconds(1)),
+  h4("4hour", HOURS.toSeconds(4)),
+  h6("6hour", HOURS.toSeconds(6)),
+  h12("12hour", HOURS.toSeconds(12)),
+
+  d1("1day", DAYS.toSeconds(1)),
+  w1("1week", DAYS.toSeconds(7)),
+  M1("1mon", DAYS.toSeconds(30)),
+  Y1("1year", DAYS.toSeconds(365));
 
   private final String code;
-  private final Long millis;
+  private final Long seconds;
 
-  private KlineInterval(String code, Long millis) {
-    this.millis = millis;
+  private KlineInterval(String code, Long seconds) {
+    this.seconds = seconds;
     this.code = code;
   }
 
-  public Long getMillis() {
-    return millis;
+  public Long getSeconds() {
+    return seconds;
   }
 
   public String code() {

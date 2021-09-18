@@ -43,6 +43,10 @@ public interface MarketDataService extends BaseService {
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 
+  default Klines getHistoryKlines(CurrencyPair currencyPair, Object... args) throws IOException {
+    throw new NotYetImplementedForExchangeException("getTicker");
+  }
+
   /**
    * Get the tickers representing the current exchange rate for the provided parameters
    *

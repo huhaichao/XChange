@@ -1,6 +1,7 @@
 package org.knowm.xchange.okcoin;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -12,6 +13,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.xml.crypto.Data;
+
 import org.knowm.xchange.okcoin.v3.dto.account.BillType;
 import org.knowm.xchange.okcoin.v3.dto.account.FuturesBillsResponse;
 import org.knowm.xchange.okcoin.v3.dto.account.FuturesLeverageResponse;
@@ -695,4 +698,24 @@ public interface OkexV3 {
       @QueryParam("to") String to,
       @QueryParam("limit") Integer limit)
       throws IOException, OkexException;
+
+  @GET
+  @Path("spot/v3/instruments/{instrument_id}/candles")
+  List<Object[]> getKlines(@PathParam("instrument_id") String instrumentId,
+                           @QueryParam("start") String start,
+                           @QueryParam("end") String end,
+                           @QueryParam("granularity") Long granularity)
+          throws IOException, OkexException;
+
+
+  @GET
+  @Path("spot/v3/instruments/{instrument_id}/history/candles")
+  List<Object[]> getHistoryKlines(
+                           @PathParam("instrument_id") String instrumentId,
+                           @QueryParam("start") String start,
+                           @QueryParam("end") String end,
+                           @QueryParam("granularity") Long granularity,
+                           @QueryParam("limit")  Integer limit)
+          throws IOException, OkexException;
+
 }

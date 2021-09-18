@@ -2,6 +2,7 @@ package org.knowm.xchange.okcoin;
 
 import org.knowm.xchange.BaseExchange;
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.okcoin.v3.service.OkexAccountService;
 import org.knowm.xchange.okcoin.v3.service.OkexMarketDataService;
@@ -9,6 +10,11 @@ import org.knowm.xchange.okcoin.v3.service.OkexTradeService;
 import si.mazi.rescu.SynchronizedValueFactory;
 
 public class OkexExchangeV3 extends BaseExchange {
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.OKEX;
+  }
 
   @Override
   protected void initServices() {
