@@ -4,22 +4,23 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @JsonDeserialize(builder = Kline.Builder.class)
 public final class Kline implements Serializable {
 
     private final long id;
     private final long count;
-    private final long openTime;
+    private final Date openTime;
     private final BigDecimal open;
     private final BigDecimal close;
     private final BigDecimal low;
     private final BigDecimal high;
     private final BigDecimal amount;
     private final BigDecimal vol;
-    private final long closeTime;
+    private final Date closeTime;
 
-    public Kline(long id, long count, long openTime, BigDecimal open, BigDecimal close, BigDecimal low, BigDecimal high, BigDecimal amount, BigDecimal vol, long closeTime) {
+    public Kline(long id, long count, Date openTime, BigDecimal open, BigDecimal close, BigDecimal low, BigDecimal high, BigDecimal amount, BigDecimal vol, Date closeTime) {
         this.id = id;
         this.count = count;
         this.openTime = openTime;
@@ -64,11 +65,11 @@ public final class Kline implements Serializable {
         return vol;
     }
 
-    public long getOpenTime() {
+    public Date getOpenTime() {
         return openTime;
     }
 
-    public long getCloseTime() {
+    public Date getCloseTime() {
         return closeTime;
     }
 
@@ -92,14 +93,14 @@ public final class Kline implements Serializable {
     public static class Builder {
         private  long id;
         private  long count;
-        private  long openTime;
+        private  Date openTime;
         private  BigDecimal open;
         private  BigDecimal close;
         private  BigDecimal low;
         private  BigDecimal high;
         private  BigDecimal amount;
         private  BigDecimal vol;
-        private  long closeTime;
+        private  Date closeTime;
 
         private boolean isBuilt = false;
 
@@ -157,12 +158,12 @@ public final class Kline implements Serializable {
             return this;
         }
 
-        public Builder openTime(long openTime) {
+        public Builder openTime(Date openTime) {
             this.openTime = openTime;
             return this;
         }
 
-        public Builder closeTime(long closeTime) {
+        public Builder closeTime(Date closeTime) {
             this.closeTime = closeTime;
             return this;
         }

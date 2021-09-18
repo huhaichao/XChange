@@ -20,6 +20,7 @@ import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.knowm.xchange.service.marketdata.params.Params;
+import org.knowm.xchange.utils.DateUtils;
 
 public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
     implements MarketDataService {
@@ -149,6 +150,8 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
 
     return new Klines(binanceKlines.stream().map(binanceKline -> {
       return new Kline.Builder()
+              .openTime(DateUtils.fromUnixTime(binanceKline.getOpenTime()))
+              .closeTime(DateUtils.fromUnixTime(binanceKline.getCloseTime()))
               .open(binanceKline.getOpenPrice())
               .close(binanceKline.getClosePrice())
               .high(binanceKline.getHighPrice())
@@ -161,8 +164,8 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
             ,currencyPair
             ,klineInterval
             ,limit
-            ,startTime
-            ,endTime);
+            ,DateUtils.fromUnixTime(startTime)
+            ,DateUtils.fromUnixTime(endTime));
   }
 
   private <T extends Number> T tradesArgument(

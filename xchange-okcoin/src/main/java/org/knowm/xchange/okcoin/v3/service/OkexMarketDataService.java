@@ -78,7 +78,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
                  .stream().map( kline ->{
                    try {
                      return new Kline.Builder()
-                             .openTime(DateUtils.fromISODateString(String.valueOf(kline[0])).getTime())
+                             .openTime(DateUtils.fromISODateString(String.valueOf(kline[0])))
                              .open( new BigDecimal(String.valueOf(kline[1])))
                              .high(new BigDecimal(String.valueOf(kline[2])))
                              .low(new BigDecimal(String.valueOf(kline[3])))
@@ -88,7 +88,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
                    } catch (InvalidFormatException e) {
                       throw new OkCoinException(0,e.getMessage());
                    }
-                 }).collect(Collectors.toList()),currencyPair,klineInterval,200, DateUtils.fromISODateString(start).getTime(),DateUtils.fromISODateString(end).getTime());
+                 }).collect(Collectors.toList()),currencyPair,klineInterval,200, DateUtils.fromISODateString(start),DateUtils.fromISODateString(end));
   }
 
   @Override
@@ -114,7 +114,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
                 .stream().map( kline ->{
                   try {
                     return new Kline.Builder()
-                            .openTime(DateUtils.fromISODateString(String.valueOf(kline[0])).getTime())
+                            .openTime(DateUtils.fromISODateString(String.valueOf(kline[0])))
                             .open( new BigDecimal(String.valueOf(kline[1])))
                             .high(new BigDecimal(String.valueOf(kline[2])))
                             .low(new BigDecimal(String.valueOf(kline[3])))
@@ -124,6 +124,6 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
                   } catch (InvalidFormatException e) {
                     throw new OkCoinException(0,e.getMessage());
                   }
-                }).collect(Collectors.toList()),currencyPair,klineInterval,limit,DateUtils.fromISODateString(start).getTime(),DateUtils.fromISODateString(end).getTime());
+                }).collect(Collectors.toList()),currencyPair,klineInterval,limit,DateUtils.fromISODateString(start),DateUtils.fromISODateString(end));
   }
 }

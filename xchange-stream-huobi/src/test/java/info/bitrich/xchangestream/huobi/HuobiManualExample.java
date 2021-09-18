@@ -4,9 +4,13 @@ import info.bitrich.xchangestream.core.StreamingExchange;
 import info.bitrich.xchangestream.core.StreamingExchangeFactory;
 import info.bitrich.xchangestream.huobi.dto.HuobiKlineType;
 import info.bitrich.xchangestream.huobi.dto.HuobiStepType;
+
+import java.util.Date;
 import java.util.List;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.dto.trade.LimitOrder;
+import org.knowm.xchange.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +24,7 @@ public class HuobiManualExample {
 
     exchange.connect().blockingAwait();
 
-    exchange
+   /* exchange
         .getStreamingMarketDataService()
         .getTicker(CurrencyPair.ETH_BTC)
         .subscribe(
@@ -66,6 +70,23 @@ public class HuobiManualExample {
               LOG.info("Bids");
               LOG.info("*************************************************");
             },
-            throwable -> LOG.error("ERROR in getting order book: ", throwable));
+            throwable -> LOG.error("ERROR in getting order book: ", throwable));*/
+
+    exchange.getStreamingMarketDataService()
+            .getKlines(CurrencyPair.BTC_USDT, KlineInterval.h1,null)
+            .subscribe(
+               kline -> {
+                   LOG.info("*************************************************");
+                   LOG.info("k line open "+ DateUtils.fromUnixTime(kline.getId()));
+                   LOG.info("k line open "+kline.getOpen());
+                   LOG.info("k line close "+kline.getClose());
+                   LOG.info("k line high "+kline.getHigh());
+                   LOG.info("k line low "+kline.getLow());
+                   LOG.info("k line amount "+kline.getAmount());
+                   LOG.info("k line cunt "+kline.getCount());
+                   LOG.info("*************************************************");
+               }
+            );
+
   }
 }

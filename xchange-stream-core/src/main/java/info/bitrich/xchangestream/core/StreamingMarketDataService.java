@@ -2,9 +2,8 @@ package info.bitrich.xchangestream.core;
 
 import io.reactivex.Observable;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
+import org.knowm.xchange.dto.marketdata.*;
+import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 
 public interface StreamingMarketDataService {
   /**
@@ -46,4 +45,14 @@ public interface StreamingMarketDataService {
    * @return {@link Observable} that emits {@link Trade} when exchange sends the update.
    */
   Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args);
+
+
+  default  Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
+    throw  new NotYetImplementedForExchangeException("getKlines");
+  }
+
+
+  default  Observable<Kline> getHistoryKlines(CurrencyPair currencyPair, Object... args){
+    throw  new NotYetImplementedForExchangeException("getKlines");
+  }
 }

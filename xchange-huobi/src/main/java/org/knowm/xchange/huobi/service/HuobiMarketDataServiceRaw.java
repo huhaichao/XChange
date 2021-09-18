@@ -48,7 +48,7 @@ public class HuobiMarketDataServiceRaw extends HuobiBaseService {
     return checkResult(
         huobi.getKlines(
             pair.base.getSymbol().toLowerCase() + pair.counter.getSymbol().toLowerCase(),
-            interval.code(),
+            interval.getCode(),
             limit));
   }
 

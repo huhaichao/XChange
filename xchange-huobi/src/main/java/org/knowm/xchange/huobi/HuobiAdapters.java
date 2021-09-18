@@ -30,6 +30,7 @@ import org.knowm.xchange.huobi.dto.account.HuobiBalanceSum;
 import org.knowm.xchange.huobi.dto.account.HuobiFundingRecord;
 import org.knowm.xchange.huobi.dto.marketdata.*;
 import org.knowm.xchange.huobi.dto.trade.HuobiOrder;
+import org.knowm.xchange.utils.DateUtils;
 
 public class HuobiAdapters {
   private static final String ONLINE = "allowed";
@@ -447,6 +448,7 @@ public class HuobiAdapters {
               kline ->
                 new Kline.Builder()
                         .id(kline.getId())
+                        .openTime(DateUtils.fromUnixTime(kline.getId()))
                         .open(kline.getOpen())
                         .close(kline.getClose())
                         .high(kline.getHigh())

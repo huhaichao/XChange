@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Map;
 import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
@@ -66,6 +67,10 @@ public class HuobiStreamingService extends JsonNettyStreamingService {
     ObjectNode send = JsonNodeFactory.instance.objectNode();
     send.put("sub", channelName);
     send.put("id", System.currentTimeMillis());
+    if (args != null && args.length > 0 && args[0] instanceof Map){
+      ((Map<String, String>) args[0]).entrySet().stream().forEach(
+              map ->  send.put(map.getKey(),map.getValue()));
+    }
     return send.toString();
   }
 

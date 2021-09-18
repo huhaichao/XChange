@@ -1,5 +1,8 @@
 package org.knowm.xchange.dto.marketdata;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import static java.util.concurrent.TimeUnit.*;
 
 public enum KlineInterval {
@@ -22,6 +25,12 @@ public enum KlineInterval {
   private final String code;
   private final Long seconds;
 
+  public static KlineInterval parseFromCode(String code){
+    return Arrays.stream(KlineInterval.values())
+            .filter(klineInterval -> klineInterval.getCode().equals(code))
+            .findFirst()
+            .get();
+  }
   private KlineInterval(String code, Long seconds) {
     this.seconds = seconds;
     this.code = code;
@@ -30,8 +39,10 @@ public enum KlineInterval {
   public Long getSeconds() {
     return seconds;
   }
-
   public String code() {
+    return code;
+  }
+  public String getCode() {
     return code;
   }
 }

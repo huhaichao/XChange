@@ -9,11 +9,10 @@ import java.util.Date;
 import java.util.List;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
+import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.huobi.HuobiUtils;
+import org.knowm.xchange.utils.DateUtils;
 
 public class HuobiStreamingMarketDataService implements StreamingMarketDataService {
 
@@ -139,4 +138,53 @@ public class HuobiStreamingMarketDataService implements StreamingMarketDataServi
               return list.get(list.size() - 1);
             });
   }
+
+    @Override
+    public Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args) {
+        String period = "60min";
+        KlineInterval klineInterval = null ;
+        if (args[0] instanceof KlineInterval){
+            klineInterval = (KlineInterval)args[0];
+            period = klineInterval.getCode();
+        }
+        Object args2 = null ;
+        if ( args.length > 1 ){
+            args2 = args[1];
+        }
+        String channelName =
+                "market." + HuobiUtils.createHuobiCurrencyPair(currencyPair) + ".kline."+period;
+        return streamingService
+                .subscribeChannel(channelName,args2)
+                .map(
+                        message -> {
+                            JsonNode data = message.get("tick");
+                            Long ts = message.get("ts").longValue();
+                            long id = data.get("id").longValue();
+                            BigDecimal amount = data.get("amount").decimalValue(); // 成交量
+                            BigDecimal open = data.get("open").decimalValue(); // 开盘价
+                            BigDecimal close = data.get("close").decimalValue(); // 收盘价,当K线为最晚的一根时，是最新成交价
+                            BigDecimal low = data.get("low").decimalValue(); // 最低价
+                            BigDecimal high = data.get("high").decimalValue(); // 最高价
+
+                            Integer count = data.get("count").intValue(); // 成交笔数
+                            BigDecimal vol = data.get("vol").decimalValue(); // 成交额,即sum(每一笔成交价 * 该笔的成交量)
+                            Kline kline =  new Kline.Builder()
+                                    .id(id)
+                                    .openTime(DateUtils.fromUnixTime(id))
+                                    .open(open)
+                                    .close(close)
+                                    .high(high)
+                                    .low(low)
+                                    .amount(amount)
+                                    .vol(vol)
+                                    .count(count)
+                                    .build();
+                            return kline ;
+                        });
+    }
+
+    @Override
+    public  Observable<Kline> getHistoryKlines(CurrencyPair currencyPair, Object... args){
+        return getKlines(currencyPair,args);
+    }
 }
