@@ -98,10 +98,10 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
         KlineInterval klineInterval = KlineInterval.h1;;
         Integer  limit = 300;
         if (args != null && args.length == 4){
-          if (args[0] instanceof Date) {
+          if (args[0] instanceof String) {
             start = (String)args[0];
           }
-          if (args[1] instanceof Date) {
+          if (args[1] instanceof String) {
             end = (String)args[1];
           }
           if (args[2] instanceof KlineInterval){

@@ -53,4 +53,13 @@ public class TickerIntegration {
     Klines klines = exchange.getMarketDataService().getKlines(CurrencyPair.BTC_USDT, DateUtils.toISODateString(DateUtil.yesterday()), DateUtils.toISODateString(DateUtil.now()),KlineInterval.h1);
     assertThat(klines).isNotNull();
   }
+
+  @Test
+  public void  getHistoryKLines() throws IOException {
+    ExchangeSpecification exSpec = new ExchangeSpecification(OkexExchangeV3.class);
+    //exSpec.setExchangeSpecificParametersItem("Use_Intl", true);
+    Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exSpec);
+    Klines klines = exchange.getMarketDataService().getHistoryKlines(CurrencyPair.BTC_USDT, "2019-09-25T02:31:00.000Z", "2019-09-24T02:31:00.000Z",KlineInterval.h1,300);
+    assertThat(klines).isNotNull();
+  }
 }
