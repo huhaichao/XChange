@@ -164,8 +164,8 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
             ,currencyPair
             ,klineInterval
             ,limit
-            ,DateUtils.fromUnixTime(startTime)
-            ,DateUtils.fromUnixTime(endTime));
+            ,startTime == null ? null : DateUtils.fromUnixTime(startTime)
+            ,startTime == null ? null : DateUtils.fromUnixTime(endTime));
   }
 
   private <T extends Number> T tradesArgument(
