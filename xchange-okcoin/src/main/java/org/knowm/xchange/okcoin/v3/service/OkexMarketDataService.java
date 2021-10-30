@@ -88,7 +88,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
                    } catch (InvalidFormatException e) {
                       throw new OkCoinException(0,e.getMessage());
                    }
-                 }).collect(Collectors.toList()),currencyPair,klineInterval,200, DateUtils.fromISODateString(start),DateUtils.fromISODateString(end));
+                 }).collect(Collectors.toList()),currencyPair,klineInterval,200,start ==null ? null: DateUtils.fromISODateString(start),end==null ? null:DateUtils.fromISODateString(end));
   }
 
   @Override
