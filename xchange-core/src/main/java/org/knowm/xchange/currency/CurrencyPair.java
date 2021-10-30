@@ -215,6 +215,7 @@ public class CurrencyPair extends Instrument implements Comparable<CurrencyPair>
   public static final CurrencyPair DOGE_NMC = new CurrencyPair(Currency.DOGE, Currency.NMC);
   public static final CurrencyPair DOGE_PPC = new CurrencyPair(Currency.DOGE, Currency.PPC);
   public static final CurrencyPair DOGE_USD = new CurrencyPair(Currency.DOGE, Currency.USD);
+  public static final CurrencyPair DOGE_USDT = new CurrencyPair(Currency.DOGE, Currency.USDT);
   public static final CurrencyPair DOGE_TRY = new CurrencyPair(Currency.DOGE, Currency.TRY);
 
   public static final CurrencyPair XDC_HKD = new CurrencyPair(Currency.XDC, Currency.HKD);
@@ -395,6 +396,14 @@ public class CurrencyPair extends Instrument implements Comparable<CurrencyPair>
   public static final CurrencyPair PBTC_USDC = new CurrencyPair(Currency.PBTC, Currency.USDC);
   public static final CurrencyPair WETH_PUSD = new CurrencyPair(Currency.WETH, Currency.PUSD);
   public static final CurrencyPair PLINK_USDC = new CurrencyPair(Currency.PLINK, Currency.USDC);
+
+  //add
+  public static final CurrencyPair BNB_USDT = new CurrencyPair(Currency.BNB, Currency.USDT);
+  public static final CurrencyPair SOL_USDT = new CurrencyPair(Currency.SOL, Currency.USDT);
+  public static final CurrencyPair DOT_USDT = new CurrencyPair(Currency.DOT, Currency.USDT);
+  public static final CurrencyPair SHIB_USDT = new CurrencyPair(Currency.SHIB, Currency.USDT);
+  public static final CurrencyPair NFT_USDT = new CurrencyPair(Currency.NFT, Currency.USDT);
+
 
   public final Currency base;
 

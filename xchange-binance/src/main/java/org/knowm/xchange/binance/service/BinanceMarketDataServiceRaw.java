@@ -68,7 +68,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
         decorateApiCall(
                 () ->
                     binance.klines(
-                        BinanceAdapters.toSymbol(pair), interval.code(), limit, startTime, endTime))
+                        BinanceAdapters.toSymbol(pair), interval.getCodeSimple(), limit, startTime, endTime))
             .withRetry(retry("klines"))
             .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
             .call();

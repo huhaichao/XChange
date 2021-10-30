@@ -391,6 +391,12 @@
 			<artifactId>xchange-deribit</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- XChange OkEx exchange support -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>xchange-okex</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
