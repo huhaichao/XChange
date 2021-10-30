@@ -150,8 +150,8 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
 
     return new Klines(binanceKlines.stream().map(binanceKline -> {
       return new Kline.Builder()
-              .openTime(DateUtils.fromUnixTime(binanceKline.getOpenTime()))
-              .closeTime(DateUtils.fromUnixTime(binanceKline.getCloseTime()))
+              .openTime(DateUtils.fromMillisUtc(binanceKline.getOpenTime()))
+              .closeTime(DateUtils.fromMillisUtc(binanceKline.getCloseTime()))
               .open(binanceKline.getOpenPrice())
               .close(binanceKline.getClosePrice())
               .high(binanceKline.getHighPrice())
@@ -164,8 +164,8 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
             ,currencyPair
             ,klineInterval
             ,limit
-            ,startTime == null ? null : DateUtils.fromUnixTime(startTime)
-            ,startTime == null ? null : DateUtils.fromUnixTime(endTime));
+            ,startTime == null ? null : DateUtils.fromMillisUtc(startTime)
+            ,startTime == null ? null : DateUtils.fromMillisUtc(endTime));
   }
 
   private <T extends Number> T tradesArgument(
