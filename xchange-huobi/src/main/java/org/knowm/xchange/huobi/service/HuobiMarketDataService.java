@@ -46,7 +46,7 @@ public class HuobiMarketDataService extends HuobiMarketDataServiceRaw implements
       throw new ExchangeException("args can not be null");
     }
     List<Kline> klineList = HuobiAdapters.adaptKlines(getKlines(currencyPair,klineInterval,limit));
-    return new Klines(klineList,currencyPair,klineInterval,limit);
+    return new Klines(exchange.getExchangeType(),klineList,currencyPair,klineInterval,limit);
   }
 
   @Override

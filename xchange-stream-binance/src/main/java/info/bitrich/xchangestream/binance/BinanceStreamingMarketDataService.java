@@ -31,11 +31,9 @@ import org.knowm.xchange.binance.dto.marketdata.BinanceTicker24h;
 import org.knowm.xchange.binance.service.BinanceMarketDataService;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.OrderBookUpdate;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
+import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.exceptions.ExchangeException;
+import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.exceptions.RateLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -499,6 +497,12 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
 
     return Stream.concat(bidStream, askStream);
   }
+
+  /*@Override
+  Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
+
+  }*/
+
 
   private <T> Observable<T> observableFromStream(Stream<T> stream) {
     return Observable.create(

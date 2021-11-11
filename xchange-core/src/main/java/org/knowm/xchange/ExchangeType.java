@@ -4,21 +4,24 @@ import java.util.Arrays;
 
 public enum ExchangeType {
 
-    HUOBI("HUOBI",1),
-    HUOBISTREAM("HUOBISTREAM",2),
-    BINANCE("BINANCE",3),
-    BINANCESTREAM("BINANCESTREAM",4),
-    OKEX("OKEX",5),
-    OKEXSTREAM("OKEXSTREAM",6),
-    OKCOIN("OKCOIN",7),
-    OKCOINSTREAM("OKCOINSTREAM",8);
+    HUOBI("HUOBI","HUOBI",1),
+    HUOBISTREAM("HUOBI","HUOBISTREAM",2),
+    BINANCE("BINANCE","BINANCE",3),
+    BINANCESTREAM("BINANCE","BINANCESTREAM",4),
+    OKEX("OKEX","OKEX",5),
+    OKEXSTREAM("OKEX","OKEXSTREAM",6),
+    OKCOIN("OKCOIN","OKCOIN",7),
+    OKCOINSTREAM("OKCOIN","OKCOINSTREAM",8);
 
-    ExchangeType(String exchangeName, Integer exchangeType) {
+    ExchangeType(String exchangeName, String exchangeChannel, Integer exchangeType) {
         this.exchangeName = exchangeName;
+        this.exchangeChannel = exchangeChannel;
         this.exchangeType = exchangeType;
     }
 
     private String exchangeName;
+
+    private String exchangeChannel;
 
     private Integer exchangeType;
 
@@ -31,6 +34,10 @@ public enum ExchangeType {
         return exchangeType;
     }
 
+    public String getExchangeChannel() {
+        return exchangeChannel;
+    }
+
     public static ExchangeType exchangeTypeFromType(Integer type){
         return Arrays.stream(ExchangeType.values())
                 .filter(exchangeType -> exchangeType.getExchangeType() == type)
@@ -38,9 +45,9 @@ public enum ExchangeType {
                 .get();
     }
 
-    public static ExchangeType exchangeTypeFromName(String exchangeName){
+    public static ExchangeType exchangeTypeFromChannel(String exchangeChannel){
         return Arrays.stream(ExchangeType.values())
-                .filter(exchangeType -> exchangeType.getExchangeName().equals(exchangeName))
+                .filter(exchangeType -> exchangeType.getExchangeChannel().equals(exchangeChannel))
                 .findFirst()
                 .get();
     }

@@ -148,7 +148,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
 
     List<BinanceKline> binanceKlines = klines(currencyPair,klineInterval,limit,startTime,endTime);
 
-    return new Klines(binanceKlines.stream().map(binanceKline -> {
+    return new Klines(exchange.getExchangeType(),binanceKlines.stream().map(binanceKline -> {
       return new Kline.Builder()
               .openTime(DateUtils.fromMillisUtc(binanceKline.getOpenTime()))
               .closeTime(DateUtils.fromMillisUtc(binanceKline.getCloseTime()))

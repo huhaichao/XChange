@@ -74,7 +74,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
            }
          }
          Long granularity = klineInterval.getSeconds();
-         return new Klines(okex.getKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity)
+         return new Klines(exchange.getExchangeType(),okex.getKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity)
                  .stream().map( kline ->{
                    try {
                      return new Kline.Builder()
@@ -110,7 +110,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
           limit = (Integer)args[3];
         }
         Long granularity = klineInterval.getSeconds();
-        return new Klines(okex.getHistoryKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity,limit)
+        return new Klines(exchange.getExchangeType(),okex.getHistoryKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity,limit)
                 .stream().map( kline ->{
                   try {
                     return new Kline.Builder()
