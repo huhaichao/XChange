@@ -14,6 +14,8 @@ import org.knowm.xchange.binance.dto.marketdata.BinanceTicker24h;
 import org.knowm.xchange.binance.service.BinanceMarketDataService;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
+import org.knowm.xchange.dto.marketdata.Klines;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 
 public class MarketDataServiceIntegration extends BinanceExchangeIntegration {
@@ -29,6 +31,12 @@ public class MarketDataServiceIntegration extends BinanceExchangeIntegration {
   @Before
   public void before() {
     Assume.assumeNotNull(exchange.getExchangeSpecification().getApiKey());
+  }
+
+  @Test
+  public void testKlines() throws Exception {
+     Klines klines = exchange.getMarketDataService().getKlines(CurrencyPair.BTC_USDT, KlineInterval.h1, 1000);
+     klines.getKlines().stream().forEach(System.out::println);
   }
 
   @Test
