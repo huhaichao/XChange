@@ -1,6 +1,8 @@
 package org.knowm.xchange;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public enum ExchangeType {
 
@@ -50,5 +52,11 @@ public enum ExchangeType {
                 .filter(exchangeType -> exchangeType.getExchangeChannel().equals(exchangeChannel))
                 .findFirst()
                 .get();
+    }
+
+    public static List<ExchangeType> exchangeTypeFromName(String exchangeName){
+        return Arrays.stream(ExchangeType.values())
+                .filter(exchangeType -> exchangeType.getExchangeName().equals(exchangeName))
+                .collect(Collectors.toList());
     }
 }

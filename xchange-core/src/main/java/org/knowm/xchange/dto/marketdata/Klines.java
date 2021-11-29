@@ -85,4 +85,8 @@ public final class Klines implements Serializable {
     public Date getEndTime() {
         return endTime;
     }
+
+    public ExchangeType getExchangeType() {
+        return exchangeType;
+    }
 }

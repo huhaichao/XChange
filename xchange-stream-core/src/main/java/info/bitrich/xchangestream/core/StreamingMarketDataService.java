@@ -69,6 +69,13 @@ public interface StreamingMarketDataService {
   Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args);
 
 
+  default Observable<Kline> getKlines(Instrument instrument, Object... args) {
+    if(instrument instanceof CurrencyPair) {
+      return getKlines((CurrencyPair) instrument, args);
+    }
+    throw new NotYetImplementedForExchangeException("getTicker");
+  }
+
   default  Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
     throw  new NotYetImplementedForExchangeException("getKlines");
   }

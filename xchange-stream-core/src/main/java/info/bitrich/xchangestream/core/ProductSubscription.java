@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import info.bitrich.xchangestream.dto.WrapCurrency;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 
 /**
  * Use to specify subscriptions during the connect phase For instancing, use builder @link {@link
@@ -16,9 +19,11 @@ public class ProductSubscription {
   private final List<CurrencyPair> orderBook;
   private final List<CurrencyPair> trades;
   private final List<CurrencyPair> ticker;
+  private final List<WrapCurrency> klines;
   private final List<CurrencyPair> userTrades;
   private final List<CurrencyPair> orders;
   private final List<Currency> balances;
+
 
   private ProductSubscription(ProductSubscriptionBuilder builder) {
     this.orderBook = asList(builder.orderBook);
@@ -27,6 +32,7 @@ public class ProductSubscription {
     this.orders = asList(builder.orders);
     this.userTrades = asList(builder.userTrades);
     this.balances = asList(builder.balances);
+    this.klines = asList(builder.klines);
   }
 
   private <T> List<T> asList(Iterable<T> collection) {
@@ -68,17 +74,22 @@ public class ProductSubscription {
   }
 
   public boolean hasUnauthenticated() {
-    return !ticker.isEmpty() || !trades.isEmpty() || !orderBook.isEmpty();
+    return !ticker.isEmpty() || !trades.isEmpty() || !orderBook.isEmpty() || !klines.isEmpty();
   }
 
   public static ProductSubscriptionBuilder create() {
     return new ProductSubscriptionBuilder();
   }
 
+  public List<WrapCurrency> getKlines() {
+    return klines;
+  }
+
   public static class ProductSubscriptionBuilder {
     private final Set<CurrencyPair> orderBook;
     private final Set<CurrencyPair> trades;
     private final Set<CurrencyPair> ticker;
+    private final Set<WrapCurrency> klines;
     private final Set<CurrencyPair> userTrades;
     private final Set<CurrencyPair> orders;
     private final Set<Currency> balances;
@@ -90,6 +101,7 @@ public class ProductSubscription {
       orders = new HashSet<>();
       userTrades = new HashSet<>();
       balances = new HashSet<>();
+      klines = new HashSet<>();
     }
 
     public ProductSubscriptionBuilder addOrderbook(CurrencyPair pair) {
@@ -122,12 +134,18 @@ public class ProductSubscription {
       return this;
     }
 
+    public ProductSubscriptionBuilder addKlines(WrapCurrency pair) {
+      klines.add(pair);
+      return this;
+    }
+
     public ProductSubscriptionBuilder addAll(CurrencyPair pair) {
       orderBook.add(pair);
       trades.add(pair);
       ticker.add(pair);
       orders.add(pair);
       userTrades.add(pair);
+      klines.add(new WrapCurrency(pair, KlineInterval.h1));
       balances.add(pair.base);
       balances.add(pair.counter);
       return this;

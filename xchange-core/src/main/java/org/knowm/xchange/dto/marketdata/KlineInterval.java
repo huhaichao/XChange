@@ -1,7 +1,6 @@
 package org.knowm.xchange.dto.marketdata;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.*;
 public enum KlineInterval {

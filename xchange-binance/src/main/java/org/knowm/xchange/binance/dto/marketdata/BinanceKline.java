@@ -3,12 +3,15 @@ package org.knowm.xchange.binance.dto.marketdata;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.Kline;
 import org.knowm.xchange.dto.marketdata.KlineInterval;
+import org.knowm.xchange.utils.DateUtils;
 
 public final class BinanceKline {
 
   private final CurrencyPair pair;
   private final KlineInterval interval;
+  private final Long id;
   private final long openTime;
   private final BigDecimal open;
   private final BigDecimal high;
@@ -20,7 +23,7 @@ public final class BinanceKline {
   private final long numberOfTrades;
   private final BigDecimal takerBuyBaseAssetVolume;
   private final BigDecimal takerBuyQuoteAssetVolume;
-
+  private  Kline kline;
   public BinanceKline(CurrencyPair pair, KlineInterval interval, Object[] obj) {
     this.pair = pair;
     this.interval = interval;
@@ -35,6 +38,37 @@ public final class BinanceKline {
     this.numberOfTrades = Long.valueOf(obj[8].toString());
     this.takerBuyBaseAssetVolume = new BigDecimal(obj[9].toString());
     this.takerBuyQuoteAssetVolume = new BigDecimal(obj[10].toString());
+    this.id = 0L;
+  }
+
+  public BinanceKline(CurrencyPair pair,
+                      KlineInterval interval,
+                      Long id,
+                      long openTime,
+                      BigDecimal open,
+                      BigDecimal high,
+                      BigDecimal low,
+                      BigDecimal close,
+                      BigDecimal volume,
+                      long closeTime,
+                      BigDecimal quoteAssetVolume,
+                      long numberOfTrades,
+                      BigDecimal takerBuyBaseAssetVolume,
+                      BigDecimal takerBuyQuoteAssetVolume) {
+    this.pair = pair;
+    this.interval = interval;
+    this.id = id;
+    this.openTime = openTime;
+    this.open = open;
+    this.high = high;
+    this.low = low;
+    this.close = close;
+    this.volume = volume;
+    this.closeTime = closeTime;
+    this.quoteAssetVolume = quoteAssetVolume;
+    this.numberOfTrades = numberOfTrades;
+    this.takerBuyBaseAssetVolume = takerBuyBaseAssetVolume;
+    this.takerBuyQuoteAssetVolume = takerBuyQuoteAssetVolume;
   }
 
   public CurrencyPair getCurrencyPair() {
@@ -97,5 +131,23 @@ public final class BinanceKline {
     String tstamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(openTime);
     return String.format(
         "[%s] %s %s O:%.6f A:%.6f C:%.6f", pair, tstamp, interval, open, getAveragePrice(), close);
+  }
+
+  public synchronized Kline toKline() {
+       if (kline == null){
+           kline = new Kline.Builder()
+                   .id(id)
+                   .openTime(DateUtils.fromMillisUtc(openTime))
+                   .closeTime(DateUtils.fromMillisUtc(closeTime))
+                   .open(open)
+                   .close(close)
+                   .high(high)
+                   .low(low)
+                   .amount(volume)
+                   .vol(quoteAssetVolume)
+                   .count(numberOfTrades)
+                   .build();
+       }
+       return kline;
   }
 }

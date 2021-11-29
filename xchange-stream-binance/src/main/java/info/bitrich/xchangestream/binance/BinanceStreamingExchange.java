@@ -3,6 +3,7 @@ package info.bitrich.xchangestream.binance;
 import info.bitrich.xchangestream.binance.BinanceUserDataChannel.NoActiveChannelException;
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.core.StreamingExchange;
+import info.bitrich.xchangestream.dto.WrapCurrency;
 import info.bitrich.xchangestream.service.netty.ConnectionStateModel.State;
 import info.bitrich.xchangestream.util.Events;
 import io.reactivex.Completable;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knowm.xchange.ExchangeType;
+import org.knowm.xchange.binance.BinanceAdapters;
 import org.knowm.xchange.binance.BinanceAuthenticated;
 import org.knowm.xchange.binance.BinanceExchange;
 import org.knowm.xchange.binance.service.BinanceMarketDataService;
@@ -213,6 +215,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
   public String buildSubscriptionStreams(ProductSubscription subscription) {
     return Stream.of(
+            buildSubscriptionKlineStrings(subscription.getKlines(),BinanceSubscriptionType.KLINE.getType()),
             buildSubscriptionStrings(
                 subscription.getTicker(),
                 realtimeOrderBookTicker
@@ -224,6 +227,17 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
                 subscription.getTrades(), BinanceSubscriptionType.TRADE.getType()))
         .filter(s -> !s.isEmpty())
         .collect(Collectors.joining("/"));
+  }
+
+  private String buildSubscriptionKlineStrings(
+          List<WrapCurrency> wrapCurrencies, String subscriptionType) {
+    return  wrapCurrencies.stream().map(
+                wrapCurrency -> BinanceAdapters.toSymbol(wrapCurrency.getCurrencyPair()).toLowerCase()
+                        +"@"
+                        + subscriptionType
+                        + "_"
+                        + wrapCurrency.getKlineInterval().getCodeSimple()
+            ).collect(Collectors.joining("/"));
   }
 
   private String buildSubscriptionStrings(
