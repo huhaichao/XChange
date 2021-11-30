@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.GateioWebSocketSubscriptionMessage;
+import dto.response.GateioKlineResponse;
 import dto.response.GateioOrderBookResponse;
 import dto.response.GateioTradesResponse;
 import dto.response.GateioWebSocketTransaction;
@@ -11,10 +12,12 @@ import info.bitrich.xchangestream.service.netty.WebSocketClientCompressionAllowC
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
 import io.reactivex.Observable;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,7 @@ public class GateioStreamingService extends JsonNettyStreamingService {
   private static final String CHANNEL_NAME_DELIMITER = "-";
 
   public static final String SPOT_ORDERBOOK_CHANNEL = "spot.order_book";
+  public static final String SPOT_KLINE_CHANNEL = "spot.candlesticks";
   public static final String SPOT_TRADES_CHANNEL = "spot.trades";
   public static final String SPOT_TICKERS_CHANNEL = "spot.tickers";
 
@@ -45,11 +49,12 @@ public class GateioStreamingService extends JsonNettyStreamingService {
     this.exchangeSpecification = exchangeSpecification;
   }
 
-  public Observable<GateioWebSocketTransaction> getRawWebSocketTransactions(
-      CurrencyPair currencyPair, String channelName, Object... args) {
+  public Observable<GateioWebSocketTransaction> getRawWebSocketTransactions(String channelName, Object... args) {
     final ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
-
-    return subscribeChannel(channelName, currencyPair, args)
+    final CurrencyPair currencyPair =
+            (args.length > 0 && args[0] instanceof CurrencyPair) ? ((CurrencyPair) args[0]) : null;
+    return subscribeChannel(channelName, args)
+        .filter(msg -> !msg.path("result").has("status"))
         .map(
             msg -> {
               switch (channelName) {
@@ -57,6 +62,8 @@ public class GateioStreamingService extends JsonNettyStreamingService {
                   return mapper.readValue(msg.toString(), GateioOrderBookResponse.class);
                 case SPOT_TRADES_CHANNEL:
                   return mapper.readValue(msg.toString(), GateioTradesResponse.class);
+                case SPOT_KLINE_CHANNEL:
+                  return mapper.readValue(msg.toString(), GateioKlineResponse.class);
               }
               return mapper.readValue(msg.toString(), GateioWebSocketTransaction.class);
             })
@@ -74,42 +81,49 @@ public class GateioStreamingService extends JsonNettyStreamingService {
   @Override
   protected String getChannelNameFromMessage(JsonNode message) {
     String channel = message.path("channel") != null ? message.path("channel").asText() : "";
-    String currencyPairOrderBook =
+
+    /*String currencyPairOrderBook =
         message.path("result").path("s") != null ? message.path("result").path("s").asText() : "";
     String currencyPairTradesTickers =
         message.path("result").path("currency_pair") != null
             ? message.path("result").path("currency_pair").asText()
             : "";
-
+    String currencyPairKline =
+            message.path("result").path("n") != null
+                    ? message.path("result").path("n").asText()
+                    : "";
     return new StringBuilder(channel)
         .append(CHANNEL_NAME_DELIMITER)
         .append(currencyPairOrderBook)
         .append(currencyPairTradesTickers)
-        .toString();
+         .append(currencyPairKline)
+        .toString();*/
+    return channel;
   }
 
   @Override
   public Observable<JsonNode> subscribeChannel(String channelName, Object... args) {
-    final CurrencyPair currencyPair =
+    /*final CurrencyPair currencyPair =
         (args.length > 0 && args[0] instanceof CurrencyPair) ? ((CurrencyPair) args[0]) : null;
-
-    String currencyPairChannelName =
-        String.format("%s-%s", channelName, currencyPair.toString().replace('/', '_'));
+    final String klineInterval =  (args.length > 1 && args[1] instanceof KlineInterval) ?
+            ((KlineInterval) args[1]).getCodeSimple().concat("_") : "";*/
+    /*String currencyPairChannelName =
+        String.format("%s-%s%s", channelName, klineInterval,currencyPair.toString().replace('/', '_'));*/
 
     try {
       // Example channel name key: spot.order_book_update-ETH_USDT, spot.trades-BTC_USDT
-      if (!channels.containsKey(currencyPairChannelName)
-          && !subscriptions.containsKey(currencyPairChannelName)) {
+      if (!channels.containsKey(channelName)
+          && !subscriptions.containsKey(channelName)) {
         subscriptions.put(
-            currencyPairChannelName, super.subscribeChannel(currencyPairChannelName, args));
+                channelName, super.subscribeChannel(channelName, args));
         channelSubscriptionMessages.put(
-            currencyPairChannelName, getSubscribeMessage(currencyPairChannelName, currencyPair));
+                channelName, getSubscribeMessage(channelName, args));
       }
     } catch (IOException e) {
-      LOG.error("Failed to subscribe to channel: {}", currencyPairChannelName);
+      LOG.error("Failed to subscribe to channel: {}", channelName);
     }
 
-    return subscriptions.get(currencyPairChannelName);
+    return subscriptions.get(channelName);
   }
 
   /**
@@ -122,26 +136,39 @@ public class GateioStreamingService extends JsonNettyStreamingService {
    */
   @Override
   public String getSubscribeMessage(String channelName, Object... args) throws IOException {
+    GateioWebSocketSubscriptionMessage subscribeMessage = null;
     final CurrencyPair currencyPair =
-        (args.length > 0 && args[0] instanceof CurrencyPair) ? ((CurrencyPair) args[0]) : null;
-
-    final int maxDepth =
-        exchangeSpecification.getExchangeSpecificParametersItem("maxDepth") != null
-            ? (int) exchangeSpecification.getExchangeSpecificParametersItem("maxDepth")
-            : MAX_DEPTH_DEFAULT;
-    final int msgInterval =
-        exchangeSpecification.getExchangeSpecificParametersItem("updateInterval") != null
-            ? (int) exchangeSpecification.getExchangeSpecificParametersItem("updateInterval")
-            : UPDATE_INTERVAL_DEFAULT;
-
-    GateioWebSocketSubscriptionMessage subscribeMessage =
-        new GateioWebSocketSubscriptionMessage(
-            channelName.split(CHANNEL_NAME_DELIMITER)[0],
-            SUBSCRIBE,
-            currencyPair,
-            msgInterval,
-            maxDepth);
-
+            (args.length > 0 && args[0] instanceof CurrencyPair) ? ((CurrencyPair) args[0]) : null;
+    /*String channel = channelName.split(CHANNEL_NAME_DELIMITER)[0];*/
+    switch (channelName) {
+        case SPOT_ORDERBOOK_CHANNEL:
+        case SPOT_TRADES_CHANNEL:
+          final int maxDepth =
+                  exchangeSpecification.getExchangeSpecificParametersItem("maxDepth") != null
+                          ? (int) exchangeSpecification.getExchangeSpecificParametersItem("maxDepth")
+                          : MAX_DEPTH_DEFAULT;
+          final int msgInterval =
+                  exchangeSpecification.getExchangeSpecificParametersItem("updateInterval") != null
+                          ? (int) exchangeSpecification.getExchangeSpecificParametersItem("updateInterval")
+                          : UPDATE_INTERVAL_DEFAULT;
+          subscribeMessage = new GateioWebSocketSubscriptionMessage(
+                  channelName,
+                  SUBSCRIBE,
+                  currencyPair,
+                  msgInterval,
+                  maxDepth);
+          break;
+        case SPOT_KLINE_CHANNEL:
+          final KlineInterval klineInterval =
+                  (args.length > 1 && args[1] instanceof KlineInterval) ? ((KlineInterval) args[1]) : null;
+          subscribeMessage = new GateioWebSocketSubscriptionMessage(
+                  channelName,
+                  SUBSCRIBE,
+                  currencyPair,
+                  klineInterval
+                  );
+          break;
+    }
     return objectMapper.writeValueAsString(subscribeMessage);
   }
 

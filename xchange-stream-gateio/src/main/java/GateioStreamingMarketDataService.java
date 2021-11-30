@@ -1,9 +1,11 @@
+import dto.response.GateioKlineResponse;
 import dto.response.GateioOrderBookResponse;
 import dto.response.GateioTradesResponse;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import io.reactivex.Observable;
 import java.util.List;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.Kline;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.marketdata.Trade;
@@ -40,7 +42,7 @@ public class GateioStreamingMarketDataService implements StreamingMarketDataServ
           String.format("The currency pair %s is not subscribed for orderbook", currencyPair));
 
     return service
-        .getRawWebSocketTransactions(currencyPair, GateioStreamingService.SPOT_ORDERBOOK_CHANNEL)
+        .getRawWebSocketTransactions(GateioStreamingService.SPOT_ORDERBOOK_CHANNEL,currencyPair)
         .map(msg -> ((GateioOrderBookResponse) msg).toOrderBook(currencyPair));
   }
 
@@ -50,9 +52,17 @@ public class GateioStreamingMarketDataService implements StreamingMarketDataServ
   }
 
   @Override
+ public Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
+    return service
+            .getRawWebSocketTransactions(GateioStreamingService.SPOT_KLINE_CHANNEL,currencyPair, args[0])
+            .map(msg -> ((GateioKlineResponse) msg).toKline(currencyPair));
+  }
+
+
+  @Override
   public Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args) {
     return service
-        .getRawWebSocketTransactions(currencyPair, GateioStreamingService.SPOT_TRADES_CHANNEL)
+        .getRawWebSocketTransactions(GateioStreamingService.SPOT_TRADES_CHANNEL, currencyPair)
         .map(msg -> ((GateioTradesResponse) msg).toTrade());
   }
 }
