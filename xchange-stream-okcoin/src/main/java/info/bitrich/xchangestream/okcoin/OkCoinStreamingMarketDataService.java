@@ -1,6 +1,8 @@
 package info.bitrich.xchangestream.okcoin;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import info.bitrich.xchangestream.okcoin.dto.OkCoinOrderbook;
 import info.bitrich.xchangestream.okcoin.dto.OkCoinWebSocketTrade;
@@ -8,19 +10,22 @@ import info.bitrich.xchangestream.okcoin.dto.marketdata.FutureTicker;
 import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.reactivex.Observable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
-import org.knowm.xchange.dto.marketdata.Trades;
+import org.knowm.xchange.dto.marketdata.*;
+import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.okcoin.FuturesContract;
 import org.knowm.xchange.okcoin.OkCoinAdapters;
+import org.knowm.xchange.okcoin.OkexAdaptersV3;
 import org.knowm.xchange.okcoin.dto.marketdata.OkCoinDepth;
 import org.knowm.xchange.okcoin.dto.marketdata.OkCoinTicker;
 import org.knowm.xchange.okcoin.dto.marketdata.OkCoinTickerResponse;
+import org.knowm.xchange.okcoin.v3.dto.marketdata.OkexSpotTicker;
+import org.knowm.xchange.utils.DateUtils;
 
 /**
  * #### spot ####
@@ -109,6 +114,36 @@ public class OkCoinStreamingMarketDataService implements StreamingMarketDataServ
             });
   }
 
+  @Override
+  public Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
+    String channel =
+            String.format(
+                    "spot/candle%ss:%s-%s",
+                    args==null?KlineInterval.h1.getSeconds():((KlineInterval)args[0]).getSeconds(),
+                    currencyPair.base.toString().toUpperCase(),
+                    currencyPair.counter.toString().toUpperCase());
+
+    return service
+            .subscribeChannel(channel)
+            .filter(s -> s.has("data"))
+            .map(
+                  s -> {
+                    JsonNode data = s.get("data").get(0);
+                    ArrayNode arrayNode =  data.withArray("candle");
+                    Date openTime =  DateUtils.fromISODateString(arrayNode.get(0).asText());
+                    return new Kline.Builder()
+                            .id(openTime.getTime())
+                            .openTime(openTime)
+                            .open( new BigDecimal(arrayNode.get(1).asDouble()))
+                            .high(new BigDecimal(arrayNode.get(2).asDouble()))
+                            .low(new BigDecimal(arrayNode.get(3).asDouble()))
+                            .close(new BigDecimal(arrayNode.get(4).asDouble()))
+                            .amount(new BigDecimal(arrayNode.get(5).asDouble()))
+                            .build();
+            });
+
+  }
+
   /**
    * #### spot #### 1. ok_sub_spot_X_ticker 订阅行情数据
    *
@@ -120,19 +155,19 @@ public class OkCoinStreamingMarketDataService implements StreamingMarketDataServ
   public Observable<Ticker> getTicker(CurrencyPair currencyPair, Object... args) {
     String channel =
         String.format(
-            "ok_sub_spot_%s_%s_ticker",
-            currencyPair.base.toString().toLowerCase(),
-            currencyPair.counter.toString().toLowerCase());
+            "spot/ticker:%s-%s",
+            currencyPair.base.toString().toUpperCase(),
+            currencyPair.counter.toString().toUpperCase());
 
     return service
         .subscribeChannel(channel)
+        .filter(s -> s.has("data"))
         .map(
-            s -> {
-              // TODO: fix parsing of BigDecimal attribute val that has format: 1,625.23
-              OkCoinTicker okCoinTicker = mapper.treeToValue(s.get("data"), OkCoinTicker.class);
-              return OkCoinAdapters.adaptTicker(
-                  new OkCoinTickerResponse(okCoinTicker), currencyPair);
-            });
+          s -> {
+            // TODO: fix parsing of BigDecimal attribute val that has format: 1,625.23
+            OkexSpotTicker okexSpotTicker = mapper.treeToValue(s.get("data").get(0), OkexSpotTicker.class);
+            return OkexAdaptersV3.convert(okexSpotTicker);
+        });
   }
 
   /**

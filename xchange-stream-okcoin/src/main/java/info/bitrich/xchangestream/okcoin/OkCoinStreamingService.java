@@ -16,6 +16,8 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Inflater;
 import org.knowm.xchange.exceptions.ExchangeException;
@@ -43,7 +45,7 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
                   pingPongSubscription.dispose();
                 }
                 pingPongSubscription =
-                    pingPongSrc.subscribe(o -> this.sendMessage("{\"event\":\"ping\"}"));
+                    pingPongSrc.subscribe(o -> this.sendMessage("ping"));
                 completable.onComplete();
               } catch (Exception e) {
                 completable.onError(e);
@@ -53,22 +55,30 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
 
   @Override
   protected String getChannelNameFromMessage(JsonNode message) throws IOException {
-    return message.get("channel").asText();
+    if (message.has("channel")){
+        return message.get("channel").asText();
+    }
+    if (message.has("table")){
+        String channel = message.get("table").asText();
+        String instrumentId = message.get("data").get(0).path("instrument_id").asText();
+        return String.format(channel.concat(":%s"),instrumentId);
+    }
+    return null;
   }
 
   @Override
   public String getSubscribeMessage(String channelName, Object... args) throws IOException {
-    return objectMapper.writeValueAsString(new WebSocketMessage("addChannel", channelName));
+    return objectMapper.writeValueAsString(new WebSocketMessage("subscribe", Arrays.asList(channelName)));
   }
 
   @Override
   public String getUnsubscribeMessage(String channelName, Object... args) throws IOException {
-    return objectMapper.writeValueAsString(new WebSocketMessage("removeChannel", channelName));
+    return objectMapper.writeValueAsString(new WebSocketMessage("unsubscribe", Arrays.asList(channelName)));
   }
 
   @Override
   protected void handleMessage(JsonNode message) {
-    if (message.get("event") != null && "pong".equals(message.get("event").asText())) {
+    if ("pong".equals(message.asText())) {
       // ignore pong message
       return;
     }

@@ -2,21 +2,23 @@ package info.bitrich.xchangestream.okcoin.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class WebSocketMessage {
-  private final String event;
-  private final String channel;
+  private final String op;
+  private final List<Object> args;
 
   public WebSocketMessage(
-      @JsonProperty("event") String event, @JsonProperty("channel") String channel) {
-    this.event = event;
-    this.channel = channel;
+      @JsonProperty("op") String op, @JsonProperty("args") List<Object> args) {
+    this.op = op;
+    this.args = args;
   }
 
-  public String getEvent() {
-    return event;
+  public String getOp() {
+    return op;
   }
 
-  public String getChannel() {
-    return channel;
+  public List<Object> getArgs() {
+    return args;
   }
 }
