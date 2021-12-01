@@ -29,7 +29,14 @@ public class GateioKlineManualExample {
     exchange.connect(productSubscription).blockingAwait();
     exchange.getStreamingMarketDataService()
             .getKlines(CurrencyPair.BTC_USDT, KlineInterval.m5)
-            .blockingSubscribe(System.out::println);
+            .subscribe(System.out::println);
+
+    exchange.getStreamingMarketDataService()
+            .getKlines(CurrencyPair.ETH_USDT, KlineInterval.m5)
+            .subscribe(System.out::println);
+
+
+    Thread.sleep(Integer.MAX_VALUE);
 
   }
 }

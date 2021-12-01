@@ -81,8 +81,7 @@ public class GateioStreamingService extends JsonNettyStreamingService {
   @Override
   protected String getChannelNameFromMessage(JsonNode message) {
     String channel = message.path("channel") != null ? message.path("channel").asText() : "";
-
-    /*String currencyPairOrderBook =
+    String currencyPairOrderBook =
         message.path("result").path("s") != null ? message.path("result").path("s").asText() : "";
     String currencyPairTradesTickers =
         message.path("result").path("currency_pair") != null
@@ -97,33 +96,32 @@ public class GateioStreamingService extends JsonNettyStreamingService {
         .append(currencyPairOrderBook)
         .append(currencyPairTradesTickers)
          .append(currencyPairKline)
-        .toString();*/
-    return channel;
+        .toString();
   }
 
   @Override
   public Observable<JsonNode> subscribeChannel(String channelName, Object... args) {
-    /*final CurrencyPair currencyPair =
+    final CurrencyPair currencyPair =
         (args.length > 0 && args[0] instanceof CurrencyPair) ? ((CurrencyPair) args[0]) : null;
     final String klineInterval =  (args.length > 1 && args[1] instanceof KlineInterval) ?
-            ((KlineInterval) args[1]).getCodeSimple().concat("_") : "";*/
-    /*String currencyPairChannelName =
-        String.format("%s-%s%s", channelName, klineInterval,currencyPair.toString().replace('/', '_'));*/
+            ((KlineInterval) args[1]).getCodeSimple().concat("_") : "";
+    String currencyPairChannelName =
+        String.format("%s-%s%s", channelName, klineInterval,currencyPair.toString().replace('/', '_'));
 
     try {
       // Example channel name key: spot.order_book_update-ETH_USDT, spot.trades-BTC_USDT
-      if (!channels.containsKey(channelName)
-          && !subscriptions.containsKey(channelName)) {
+      if (!channels.containsKey(currencyPairChannelName)
+          && !subscriptions.containsKey(currencyPairChannelName)) {
         subscriptions.put(
-                channelName, super.subscribeChannel(channelName, args));
+                currencyPairChannelName, super.subscribeChannel(currencyPairChannelName, args));
         channelSubscriptionMessages.put(
-                channelName, getSubscribeMessage(channelName, args));
+                currencyPairChannelName, getSubscribeMessage(currencyPairChannelName, args));
       }
     } catch (IOException e) {
-      LOG.error("Failed to subscribe to channel: {}", channelName);
+      LOG.error("Failed to subscribe to channel: {}", currencyPairChannelName);
     }
 
-    return subscriptions.get(channelName);
+    return subscriptions.get(currencyPairChannelName);
   }
 
   /**
@@ -139,8 +137,8 @@ public class GateioStreamingService extends JsonNettyStreamingService {
     GateioWebSocketSubscriptionMessage subscribeMessage = null;
     final CurrencyPair currencyPair =
             (args.length > 0 && args[0] instanceof CurrencyPair) ? ((CurrencyPair) args[0]) : null;
-    /*String channel = channelName.split(CHANNEL_NAME_DELIMITER)[0];*/
-    switch (channelName) {
+    String channel = channelName.split(CHANNEL_NAME_DELIMITER)[0];
+    switch (channel) {
         case SPOT_ORDERBOOK_CHANNEL:
         case SPOT_TRADES_CHANNEL:
           final int maxDepth =
@@ -152,7 +150,7 @@ public class GateioStreamingService extends JsonNettyStreamingService {
                           ? (int) exchangeSpecification.getExchangeSpecificParametersItem("updateInterval")
                           : UPDATE_INTERVAL_DEFAULT;
           subscribeMessage = new GateioWebSocketSubscriptionMessage(
-                  channelName,
+                  channel,
                   SUBSCRIBE,
                   currencyPair,
                   msgInterval,
@@ -162,7 +160,7 @@ public class GateioStreamingService extends JsonNettyStreamingService {
           final KlineInterval klineInterval =
                   (args.length > 1 && args[1] instanceof KlineInterval) ? ((KlineInterval) args[1]) : null;
           subscribeMessage = new GateioWebSocketSubscriptionMessage(
-                  channelName,
+                  channel,
                   SUBSCRIBE,
                   currencyPair,
                   klineInterval
