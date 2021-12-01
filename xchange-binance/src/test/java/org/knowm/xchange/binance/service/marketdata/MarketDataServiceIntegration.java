@@ -35,7 +35,8 @@ public class MarketDataServiceIntegration extends BinanceExchangeIntegration {
 
   @Test
   public void testKlines() throws Exception {
-     Klines klines = exchange.getMarketDataService().getKlines(CurrencyPair.BTC_USDT, KlineInterval.h1, 1000);
+     Klines klines = exchange.getMarketDataService().getKlines(new CurrencyPair("TLM/USDT"), KlineInterval.m15, 1000);
+     System.out.println(klines.getKlines().size());
      klines.getKlines().stream().forEach(System.out::println);
   }
 

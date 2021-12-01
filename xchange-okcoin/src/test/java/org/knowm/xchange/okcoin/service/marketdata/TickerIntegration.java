@@ -50,7 +50,9 @@ public class TickerIntegration {
     ExchangeSpecification exSpec = new ExchangeSpecification(OkexExchangeV3.class);
     //exSpec.setExchangeSpecificParametersItem("Use_Intl", true);
     Exchange exchange = ExchangeFactory.INSTANCE.createExchange(exSpec);
-    Klines klines = exchange.getMarketDataService().getKlines(CurrencyPair.BTC_USDT, DateUtils.toISODateString(DateUtil.yesterday()), DateUtils.toISODateString(DateUtil.now()),KlineInterval.h1);
+    Klines klines = exchange.getMarketDataService().getKlines(new CurrencyPair("GODS/USDT"), KlineInterval.m15);
+    System.out.println(klines.getKlines().size());
+    klines.getKlines().stream().forEach(System.out::println);
     assertThat(klines).isNotNull();
   }
 
