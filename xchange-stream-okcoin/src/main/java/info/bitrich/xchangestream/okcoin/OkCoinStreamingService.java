@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OkCoinStreamingService extends JsonNettyStreamingService {
-
+  private static final Logger LOG = LoggerFactory.getLogger(OkCoinStreamingService.class);
   private final Observable<Long> pingPongSrc = Observable.interval(15, 15, TimeUnit.SECONDS);
 
   private Disposable pingPongSubscription;
@@ -52,7 +52,32 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
               }
             });
   }
+  @Override
+  public void messageHandler(String message) {
+    LOG.debug("Received message: {}", message);
+    if ("pong".equals(message)) {
+      // ignore pong message
+      return;
+    }
+    JsonNode jsonNode;
 
+    // Parse incoming message to JSON
+    try {
+      jsonNode = objectMapper.readTree(message);
+    } catch (IOException e) {
+      LOG.error("Error parsing incoming message to JSON: {}", message);
+      return;
+    }
+
+    if (processArrayMessageSeparately() && jsonNode.isArray()) {
+      // In case of array - handle every message separately.
+      for (JsonNode node : jsonNode) {
+        handleMessage(node);
+      }
+    } else {
+      handleMessage(jsonNode);
+    }
+  }
   @Override
   protected String getChannelNameFromMessage(JsonNode message) throws IOException {
     if (message.has("channel")){
@@ -78,10 +103,6 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
 
   @Override
   protected void handleMessage(JsonNode message) {
-    if ("pong".equals(message.asText())) {
-      // ignore pong message
-      return;
-    }
     if (message.get("data") != null) {
       if (message.get("data").has("result")) {
         boolean success = message.get("data").get("result").asBoolean();
