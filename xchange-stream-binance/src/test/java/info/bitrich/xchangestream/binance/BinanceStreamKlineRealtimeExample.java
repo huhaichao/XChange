@@ -21,7 +21,16 @@ public class BinanceStreamKlineRealtimeExample {
     exchange.connect(subscription).blockingAwait();
     exchange
         .getStreamingMarketDataService()
-        .getKlines(CurrencyPair.BTC_USDT,KlineInterval.m5.getCode())
-        .blockingSubscribe(System.out::println);
+        .getKlines(CurrencyPair.BTC_USDT,KlineInterval.m5)
+        .subscribe(System.out::println);
+
+    exchange.enableLiveSubscription();
+
+    exchange
+            .getStreamingMarketDataService()
+            .getKlines(CurrencyPair.ETH_USDT,KlineInterval.m5)
+            .subscribe(System.out::println);
+
+    Thread.sleep(Integer.MAX_VALUE);
   }
 }

@@ -73,6 +73,9 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
              klineInterval = (KlineInterval)args[2];
            }
          }
+         if (args != null && args.length == 1){
+             klineInterval = (KlineInterval)args[0];
+         }
          Long granularity = klineInterval.getSeconds();
          return new Klines(exchange.getExchangeType(),okex.getKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity)
                  .stream().map( kline ->{

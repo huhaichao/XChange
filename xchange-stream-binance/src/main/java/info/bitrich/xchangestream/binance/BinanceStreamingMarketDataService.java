@@ -106,7 +106,7 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
   }
 
   public Observable<BinanceKline> getRawKline(CurrencyPair currencyPair, Object... args) {
-    WrapCurrency wrapCurrency = new WrapCurrency(currencyPair,KlineInterval.parseFromCode(args[0].toString()));
+    WrapCurrency wrapCurrency = new WrapCurrency(currencyPair,(KlineInterval)args[0]);
     if (!service.isLiveSubscriptionEnabled()
             && !service.getProductSubscription().getKlines().contains(wrapCurrency)) {
       throw new UpFrontSubscriptionRequiredException();
@@ -167,7 +167,7 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
   }
   @Override
   public Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
-    return getRawKline(currencyPair, args[0].toString()).map(BinanceKline::toKline);
+    return getRawKline(currencyPair, args).map(BinanceKline::toKline);
   }
 
   @Override
