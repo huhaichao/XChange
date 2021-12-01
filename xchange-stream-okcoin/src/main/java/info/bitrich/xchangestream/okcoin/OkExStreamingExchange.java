@@ -8,7 +8,7 @@ public class OkExStreamingExchange extends OkCoinStreamingExchange {
 
   @Override
   public ExchangeType getExchangeType(){
-    return ExchangeType.OKCOINSTREAM;
+    return ExchangeType.OKEXSTREAM;
   }
 
   public OkExStreamingExchange() {
