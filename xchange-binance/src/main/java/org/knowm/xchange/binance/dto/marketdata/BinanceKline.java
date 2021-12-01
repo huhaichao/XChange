@@ -38,7 +38,7 @@ public final class BinanceKline {
     this.numberOfTrades = Long.valueOf(obj[8].toString());
     this.takerBuyBaseAssetVolume = new BigDecimal(obj[9].toString());
     this.takerBuyQuoteAssetVolume = new BigDecimal(obj[10].toString());
-    this.id = 0L;
+    this.id = Long.valueOf(obj[0].toString());
   }
 
   public BinanceKline(CurrencyPair pair,

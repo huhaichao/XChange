@@ -80,8 +80,10 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
          return new Klines(exchange.getExchangeType(),okex.getKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity)
                  .stream().map( kline ->{
                    try {
+                     Date openTime = DateUtils.fromISODateString(String.valueOf(kline[0]));
                      return new Kline.Builder()
-                             .openTime(DateUtils.fromISODateString(String.valueOf(kline[0])))
+                             .id(openTime.getTime())
+                             .openTime(openTime)
                              .open( new BigDecimal(String.valueOf(kline[1])))
                              .high(new BigDecimal(String.valueOf(kline[2])))
                              .low(new BigDecimal(String.valueOf(kline[3])))
@@ -116,8 +118,10 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
         return new Klines(exchange.getExchangeType(),okex.getHistoryKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity,limit)
                 .stream().map( kline ->{
                   try {
+                    Date openTime = DateUtils.fromISODateString(String.valueOf(kline[0]));
                     return new Kline.Builder()
-                            .openTime(DateUtils.fromISODateString(String.valueOf(kline[0])))
+                            .id(openTime.getTime())
+                            .openTime(openTime)
                             .open( new BigDecimal(String.valueOf(kline[1])))
                             .high(new BigDecimal(String.valueOf(kline[2])))
                             .low(new BigDecimal(String.valueOf(kline[3])))

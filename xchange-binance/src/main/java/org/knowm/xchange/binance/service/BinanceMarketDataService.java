@@ -1,6 +1,7 @@
 package org.knowm.xchange.binance.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -149,8 +150,10 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
     List<BinanceKline> binanceKlines = klines(currencyPair,klineInterval,limit,startTime,endTime);
 
     return new Klines(exchange.getExchangeType(),binanceKlines.stream().map(binanceKline -> {
+      Date openTime = DateUtils.fromMillisUtc(binanceKline.getOpenTime());
       return new Kline.Builder()
-              .openTime(DateUtils.fromMillisUtc(binanceKline.getOpenTime()))
+              .id(openTime.getTime())
+              .openTime(openTime)
               .closeTime(DateUtils.fromMillisUtc(binanceKline.getCloseTime()))
               .open(binanceKline.getOpenPrice())
               .close(binanceKline.getClosePrice())
