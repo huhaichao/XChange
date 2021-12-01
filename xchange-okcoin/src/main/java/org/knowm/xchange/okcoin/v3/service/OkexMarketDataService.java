@@ -61,14 +61,8 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
   public Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
          String start = null;
          String end = null;
-         KlineInterval klineInterval = KlineInterval.h1;
-         if (args != null && args.length == 1){
-             klineInterval = (KlineInterval)args[0];
-         }
+         KlineInterval klineInterval = (KlineInterval)args[0];
          if (args != null && args.length == 3){
-           if (args[0] instanceof KlineInterval){
-             klineInterval = (KlineInterval)args[0];
-           }
            if (args[1] instanceof String) {
              start = (String)args[1];
            }
@@ -100,19 +94,15 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
   public Klines getHistoryKlines(CurrencyPair currencyPair, Object... args) throws IOException {
         String start = null;
         String end = null;
-        KlineInterval klineInterval = KlineInterval.h1;;
-        Integer  limit = 300;
+        KlineInterval klineInterval = (KlineInterval)args[0];
+        Integer limit = (Integer) args[0];
         if (args != null && args.length == 4){
-          if (args[0] instanceof String) {
-            start = (String)args[0];
-          }
-          if (args[1] instanceof String) {
-            end = (String)args[1];
-          }
-          if (args[2] instanceof KlineInterval){
-            klineInterval = (KlineInterval)args[2];
-          }
-          limit = (Integer)args[3];
+           if (args[1] instanceof String) {
+              start = (String)args[1];
+           }
+           if (args[2] instanceof String) {
+              end = (String)args[2];
+           }
         }
         Long granularity = klineInterval.getSeconds();
         return new Klines(exchange.getExchangeType(),okex.getHistoryKlines(OkexAdaptersV3.toSpotInstrument(currencyPair),start,end,granularity,limit)

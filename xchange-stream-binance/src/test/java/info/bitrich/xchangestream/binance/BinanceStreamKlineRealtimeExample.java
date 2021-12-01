@@ -16,19 +16,19 @@ public class BinanceStreamKlineRealtimeExample {
     BinanceStreamingExchange exchange =(BinanceStreamingExchange)
         StreamingExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
     ProductSubscription subscription = ProductSubscription.create()
-            .addKlines(new WrapCurrency(CurrencyPair.BTC_USDT, KlineInterval.m5))
+            .addKlines(new WrapCurrency(CurrencyPair.BTC_USDT, KlineInterval.m1))
             .build();
     exchange.connect(subscription).blockingAwait();
     exchange
         .getStreamingMarketDataService()
-        .getKlines(CurrencyPair.BTC_USDT,KlineInterval.m5)
+        .getKlines(CurrencyPair.BTC_USDT,KlineInterval.m1)
         .subscribe(System.out::println);
 
     exchange.enableLiveSubscription();
 
     exchange
             .getStreamingMarketDataService()
-            .getKlines(CurrencyPair.ETH_USDT,KlineInterval.m5)
+            .getKlines(CurrencyPair.ETH_USDT,KlineInterval.m1)
             .subscribe(System.out::println);
 
     Thread.sleep(Integer.MAX_VALUE);
