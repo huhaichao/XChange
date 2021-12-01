@@ -6,10 +6,16 @@ import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import info.bitrich.xchangestream.service.netty.ConnectionStateModel.State;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.okcoin.OkCoinExchange;
 
 public class OkCoinStreamingExchange extends OkCoinExchange implements StreamingExchange {
   private static final String API_URI = "wss://real.okcoin.com:10440/websocket";
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.OKCOINSTREAM;
+  }
 
   private final OkCoinStreamingService streamingService;
   private OkCoinStreamingMarketDataService streamingMarketDataService;

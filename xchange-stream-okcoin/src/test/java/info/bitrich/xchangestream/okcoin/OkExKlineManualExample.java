@@ -11,7 +11,7 @@ public class OkExKlineManualExample {
 
     private static final Logger LOG = LoggerFactory.getLogger(OkExKlineManualExample.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         StreamingExchange exchange =
                 StreamingExchangeFactory.INSTANCE.createExchange(OkExStreamingExchange.class);
         exchange.connect().blockingAwait();
@@ -24,5 +24,19 @@ public class OkExKlineManualExample {
                             LOG.info("kline: {}", kline);
                         },
                         throwable -> LOG.error("ERROR in getting kline: ", throwable));
+
+
+        exchange
+                .getStreamingMarketDataService()
+                .getKlines(CurrencyPair.ETH_USDT, KlineInterval.m1)
+                .subscribe(
+                        kline -> {
+                            LOG.info("kline: {}", kline);
+                        },
+                        throwable -> LOG.error("ERROR in getting kline: ", throwable));
+
+
+        Thread.sleep(Integer.MAX_VALUE);
+
     }
 }
