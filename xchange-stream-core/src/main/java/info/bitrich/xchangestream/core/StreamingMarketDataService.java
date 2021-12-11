@@ -28,7 +28,7 @@ public interface StreamingMarketDataService {
   }
 
   default Observable<OrderBook> getOrderBook(Instrument instrument, Object... args) {
-    if(instrument instanceof CurrencyPair) {
+    if (instrument instanceof CurrencyPair) {
       return getOrderBook((CurrencyPair) instrument, args);
     }
     throw new NotYetImplementedForExchangeException("getOrderBook");
@@ -49,7 +49,7 @@ public interface StreamingMarketDataService {
   }
 
   default Observable<Ticker> getTicker(Instrument instrument, Object... args) {
-    if(instrument instanceof CurrencyPair) {
+    if (instrument instanceof CurrencyPair) {
       return getTicker((CurrencyPair) instrument, args);
     }
     throw new NotYetImplementedForExchangeException("getTicker");
@@ -66,9 +66,16 @@ public interface StreamingMarketDataService {
    * @param currencyPair Currency pair of the trades
    * @return {@link Observable} that emits {@link Trade} when exchange sends the update.
    */
-  Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args);
+  default Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args) {
+    throw new NotYetImplementedForExchangeException("getTrades");
+  }
 
-
+  default Observable<Trade> getTrades(Instrument instrument, Object... args) {
+    if (instrument instanceof CurrencyPair) {
+      return getTrades((CurrencyPair) instrument, args);
+    }
+    throw new NotYetImplementedForExchangeException("getTrades");
+  }
   default Observable<Kline> getKlines(Instrument instrument, Object... args) {
     if(instrument instanceof CurrencyPair) {
       return getKlines((CurrencyPair) instrument, args);
