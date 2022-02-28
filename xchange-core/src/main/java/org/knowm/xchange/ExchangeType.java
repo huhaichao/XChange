@@ -14,8 +14,12 @@ public enum ExchangeType {
     OKEXSTREAM("OKEX","OKEXSTREAM",6),
     OKCOIN("OKCOIN","OKCOIN",7),
     OKCOINSTREAM("OKCOIN","OKCOINSTREAM",8),
-    OKEXFUTURESSTREAM("OKEX","OKEXFUTURESSTREAM",9);
-
+    OKEXFUTURESSTREAM("OKEX","OKEXFUTURESSTREAM",9),
+    OKEXV3("OKEX","OKEXV3",10),
+    BINANCEUS("BINANCE","BINANCEUS",11),
+    BINANCEUSSTREAM("BINANCE","BINANCEUSSTREAM",12),
+    BINANCEFUTURESTREAM("BINANCE","BINANCEFUTURESTREAM",13),
+    ;
     ExchangeType(String exchangeName, String exchangeChannel, Integer exchangeType) {
         this.exchangeName = exchangeName;
         this.exchangeChannel = exchangeChannel;

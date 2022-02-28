@@ -1,6 +1,7 @@
 package info.bitrich.xchangestream.binance;
 
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.utils.AuthUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,11 @@ import org.slf4j.LoggerFactory;
 public class BinanceUsStreamingExchange extends BinanceStreamingExchange {
   private static final Logger LOG = LoggerFactory.getLogger(BinanceStreamingExchange.class);
   private static final String API_BASE_URI = "wss://stream.binance.us:9443/";
+
+  @Override
+  public ExchangeType getExchangeType(){
+    return ExchangeType.BINANCEUSSTREAM;
+  }
 
   @Override
   protected String getStreamingBaseUri() {

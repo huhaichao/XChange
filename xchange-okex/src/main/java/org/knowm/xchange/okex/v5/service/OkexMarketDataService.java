@@ -70,8 +70,12 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
         end = (String)args[3];
       }
     }
+    String bar = klineInterval.getCodeSimple();
+    if (!bar.endsWith("m")){
+      bar = bar.toUpperCase();
+    }
     return new Klines(exchange.getExchangeType(),
-            OkexAdapters.adaptCandles(getCandles(OkexAdapters.adaptCurrencyPairId(currencyPair),end,start,klineInterval.getCodeSimple(),String.valueOf(limit)).getData()),
+            OkexAdapters.adaptCandles(getCandles(OkexAdapters.adaptCurrencyPairId(currencyPair),end,start,bar,String.valueOf(limit)).getData()),
             currencyPair,
             klineInterval,
             limit,

@@ -13,7 +13,7 @@ public class OkexExchangeV3 extends BaseExchange {
 
   @Override
   public ExchangeType getExchangeType(){
-    return ExchangeType.OKEX;
+    return ExchangeType.OKEXV3;
   }
 
   @Override

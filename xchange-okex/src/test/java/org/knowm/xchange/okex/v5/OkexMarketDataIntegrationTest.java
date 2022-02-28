@@ -45,7 +45,7 @@ public class OkexMarketDataIntegrationTest {
     Exchange exchange =
             ExchangeFactory.INSTANCE.createExchange(OkexExchange.class.getCanonicalName());
     exchange.remoteInit();
-    Klines klines = exchange.getMarketDataService().getKlines(CurrencyPair.BTC_USDT, KlineInterval.m15);
+    Klines klines = exchange.getMarketDataService().getKlines(CurrencyPair.BTC_USDT, KlineInterval.h1);
     Assert.assertTrue(Objects.nonNull(klines) && !klines.getKlines().isEmpty());
   }
 }
