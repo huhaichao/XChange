@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -19,6 +21,7 @@ import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.account.Balance;
 import org.knowm.xchange.dto.account.Wallet;
+import org.knowm.xchange.dto.marketdata.Kline;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.knowm.xchange.dto.marketdata.Trades;
@@ -31,16 +34,15 @@ import org.knowm.xchange.dto.trade.OpenOrders;
 import org.knowm.xchange.dto.trade.UserTrade;
 import org.knowm.xchange.dto.trade.UserTrades;
 import org.knowm.xchange.instrument.Instrument;
+import org.knowm.xchange.okex.v5.dto.OkexException;
 import org.knowm.xchange.okex.v5.dto.OkexResponse;
 import org.knowm.xchange.okex.v5.dto.account.OkexAssetBalance;
 import org.knowm.xchange.okex.v5.dto.account.OkexWalletBalance;
-import org.knowm.xchange.okex.v5.dto.marketdata.OkexCurrency;
-import org.knowm.xchange.okex.v5.dto.marketdata.OkexInstrument;
-import org.knowm.xchange.okex.v5.dto.marketdata.OkexOrderbook;
-import org.knowm.xchange.okex.v5.dto.marketdata.OkexTrade;
+import org.knowm.xchange.okex.v5.dto.marketdata.*;
 import org.knowm.xchange.okex.v5.dto.trade.OkexAmendOrderRequest;
 import org.knowm.xchange.okex.v5.dto.trade.OkexOrderDetails;
 import org.knowm.xchange.okex.v5.dto.trade.OkexOrderRequest;
+import org.knowm.xchange.utils.DateUtils;
 
 /** Author: Max Gao (gaamox@tutanota.com) Created: 08-06-2021 */
 public class OkexAdapters {
@@ -334,5 +336,26 @@ public class OkexAdapters {
 
   private static BigDecimal checkForEmpty(String value) {
     return StringUtils.isEmpty(value) ? null : new BigDecimal(value);
+  }
+
+  public static List<Kline> adaptCandles(List<OkexCandleStick> candles) {
+
+    return  candles.stream().map( candleStick ->{
+      try {
+        Date openTime = DateUtils.fromMillisUtc(candleStick.getTimestamp());
+        return new Kline.Builder()
+                .id(openTime.getTime())
+                .openTime(openTime)
+                .open( new BigDecimal(candleStick.getOpenPrice()))
+                .high(new BigDecimal(candleStick.getHighPrice()))
+                .low(new BigDecimal(candleStick.getLowPrice()))
+                .close(new BigDecimal(candleStick.getClosePrice()))
+                .amount(new BigDecimal(candleStick.getVolume()))
+                .build();
+      } catch (Exception e) {
+        throw new OkexException(e.getMessage(),0);
+      }
+    }).collect(Collectors.toList());
+
   }
 }

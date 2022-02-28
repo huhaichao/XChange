@@ -4,9 +4,15 @@ import static org.knowm.xchange.okex.v5.Okex.instrumentsPath;
 import static org.knowm.xchange.okex.v5.OkexAuthenticated.currenciesPath;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.knowm.xchange.client.ResilienceRegistries;
+import org.knowm.xchange.dto.marketdata.Kline;
+import org.knowm.xchange.okex.v5.OkexAdapters;
 import org.knowm.xchange.okex.v5.OkexExchange;
 import org.knowm.xchange.okex.v5.dto.OkexException;
 import org.knowm.xchange.okex.v5.dto.OkexResponse;
@@ -100,5 +106,18 @@ public class OkexMarketDataServiceRaw extends OkexBaseService {
         limit,
         (String)
             exchange.getExchangeSpecification().getExchangeSpecificParametersItem("simulated"));
+  }
+
+  public OkexResponse<List<OkexCandleStick>> getCandles(
+          String instrument, String after, String before, String bar, String limit)
+          throws OkexException, IOException {
+    return okex.getCandles(
+            instrument,
+            after,
+            before,
+            bar,
+            limit,
+            (String)
+                    exchange.getExchangeSpecification().getExchangeSpecificParametersItem("simulated"));
   }
 }

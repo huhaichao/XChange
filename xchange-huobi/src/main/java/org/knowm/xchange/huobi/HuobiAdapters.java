@@ -36,12 +36,7 @@ import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.huobi.dto.account.HuobiBalanceRecord;
 import org.knowm.xchange.huobi.dto.account.HuobiBalanceSum;
 import org.knowm.xchange.huobi.dto.account.HuobiFundingRecord;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiAllTicker;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiAsset;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiAssetPair;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiCurrency;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiCurrencyWrapper;
-import org.knowm.xchange.huobi.dto.marketdata.HuobiTicker;
+import org.knowm.xchange.huobi.dto.marketdata.*;
 import org.knowm.xchange.huobi.dto.trade.HuobiOrder;
 import org.knowm.xchange.utils.DateUtils;
 

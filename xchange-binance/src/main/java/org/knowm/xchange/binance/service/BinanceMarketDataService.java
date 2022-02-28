@@ -143,7 +143,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
         startTime = (Long)args[2];
       }
       if(args[3] != null){
-        endTime = (Long)args[2];
+        endTime = (Long)args[3];
       }
     }
 

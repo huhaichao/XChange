@@ -11,6 +11,8 @@ public class OkexCandleStick {
   private final String highPrice;
   private final String lowPrice;
   private final String volume;
+  private final String quoteAssetVolume;
+
 
   @JsonCreator
   public OkexCandleStick(JsonNode node) {
@@ -20,6 +22,7 @@ public class OkexCandleStick {
     this.highPrice = node.get(2).asText();
     this.lowPrice = node.get(3).asText();
     this.volume = node.get(5).asText();
+    this.quoteAssetVolume = node.get(6).asText();
   }
 
   public Long getTimestamp() {
@@ -66,6 +69,13 @@ public class OkexCandleStick {
         + ", volume='"
         + volume
         + '\''
+        + ", quoteAssetVolume='"
+        + quoteAssetVolume
+        + '\''
         + '}';
+  }
+
+  public String getQuoteAssetVolume() {
+    return quoteAssetVolume;
   }
 }

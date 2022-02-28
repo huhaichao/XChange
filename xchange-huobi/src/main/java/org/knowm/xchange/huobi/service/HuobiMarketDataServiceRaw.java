@@ -12,15 +12,12 @@ import org.knowm.xchange.huobi.dto.marketdata.HuobiDepth;
 import org.knowm.xchange.huobi.dto.marketdata.HuobiKline;
 import org.knowm.xchange.huobi.dto.marketdata.HuobiTicker;
 import org.knowm.xchange.huobi.dto.marketdata.HuobiTradeWrapper;
-import org.knowm.xchange.huobi.dto.marketdata.KlineInterval;
 import org.knowm.xchange.huobi.dto.marketdata.results.HuobiAllTickersResult;
 import org.knowm.xchange.huobi.dto.marketdata.results.HuobiAssetPairsResult;
 import org.knowm.xchange.huobi.dto.marketdata.results.HuobiCurrenciesResult;
 import org.knowm.xchange.huobi.dto.marketdata.results.HuobiDepthResult;
 import org.knowm.xchange.huobi.dto.marketdata.results.HuobiTickerResult;
 import org.knowm.xchange.huobi.dto.marketdata.results.HuobiTradesResult;
-import org.knowm.xchange.huobi.dto.marketdata.*;
-import org.knowm.xchange.huobi.dto.marketdata.results.*;
 
 public class HuobiMarketDataServiceRaw extends HuobiBaseService {
 

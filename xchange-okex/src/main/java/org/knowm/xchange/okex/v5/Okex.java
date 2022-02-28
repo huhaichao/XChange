@@ -61,6 +61,17 @@ public interface Okex {
       throws IOException, OkexException;
 
   @GET
+  @Path("/market/candles")
+  OkexResponse<List<OkexCandleStick>> getCandles(
+          @QueryParam("instId") String instrument,
+          @QueryParam("after") String after,
+          @QueryParam("before") String before,
+          @QueryParam("bar") String bar,
+          @QueryParam("limit") String limit,
+          @HeaderParam("X-SIMULATED-TRADING") String simulatedTrading)
+          throws IOException, OkexException;
+
+  @GET
   @Path("/market/history-candles")
   OkexResponse<List<OkexCandleStick>> getHistoryCandles(
       @QueryParam("instId") String instrument,
