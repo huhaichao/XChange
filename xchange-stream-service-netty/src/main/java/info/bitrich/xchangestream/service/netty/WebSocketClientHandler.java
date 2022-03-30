@@ -116,7 +116,10 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     LOG.error(
         "WebSocket client {} encountered exception ({} - {}). Closing",
-        ctx.channel(),cause);
+        ctx.channel(),
+        cause.getClass().getSimpleName(),
+        cause.getMessage(),
+        cause);
     if (!handshakeFuture.isDone()) {
       handshakeFuture.setFailure(cause);
     }
