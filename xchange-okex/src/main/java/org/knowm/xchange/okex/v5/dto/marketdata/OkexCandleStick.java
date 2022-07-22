@@ -11,6 +11,7 @@ public class OkexCandleStick {
   private final String highPrice;
   private final String lowPrice;
   private final String volume;
+  private final String volumeCcy;
   private final String quoteAssetVolume;
 
 
@@ -23,6 +24,7 @@ public class OkexCandleStick {
     this.lowPrice = node.get(3).asText();
     this.volume = node.get(5).asText();
     this.quoteAssetVolume = node.get(6).asText();
+    this.volumeCcy = node.get(6).asText();
   }
 
   public Long getTimestamp() {
@@ -73,6 +75,10 @@ public class OkexCandleStick {
         + quoteAssetVolume
         + '\''
         + '}';
+  }
+
+  public String getVolumeCcy() {
+    return volumeCcy;
   }
 
   public String getQuoteAssetVolume() {

@@ -1,19 +1,5 @@
 package org.knowm.xchange.okex.v5;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -21,10 +7,7 @@ import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.account.Balance;
 import org.knowm.xchange.dto.account.Wallet;
-import org.knowm.xchange.dto.marketdata.Kline;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Trade;
-import org.knowm.xchange.dto.marketdata.Trades;
+import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.dto.meta.CurrencyMetaData;
 import org.knowm.xchange.dto.meta.CurrencyPairMetaData;
 import org.knowm.xchange.dto.meta.ExchangeMetaData;
@@ -370,4 +353,26 @@ public class OkexAdapters {
     }).collect(Collectors.toList());
 
   }
+
+  public static CandleStickData adaptCandleStickData(List<OkexCandleStick> okexCandleStickList, CurrencyPair currencyPair) {
+    CandleStickData candleStickData = null;
+    if (!okexCandleStickList.isEmpty()) {
+      List<CandleStick> candleStickList = new ArrayList<>();
+      for (OkexCandleStick okexCandleStick : okexCandleStickList) {
+        candleStickList.add(new CandleStick.Builder()
+                .timestamp(new Date(okexCandleStick.getTimestamp()))
+                .open(new BigDecimal(okexCandleStick.getOpenPrice()))
+                .high(new BigDecimal(okexCandleStick.getHighPrice()))
+                .low(new BigDecimal(okexCandleStick.getLowPrice()))
+                .close(new BigDecimal(okexCandleStick.getClosePrice()))
+                .volume(new BigDecimal(okexCandleStick.getVolume()))
+                .quotaVolume(new BigDecimal(okexCandleStick.getVolumeCcy()))
+                .build());
+      }
+      candleStickData = new CandleStickData(currencyPair, candleStickList);
+    }
+    return candleStickData;
+  }
+}
+
 }
