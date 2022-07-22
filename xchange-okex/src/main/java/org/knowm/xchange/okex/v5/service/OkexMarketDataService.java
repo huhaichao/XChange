@@ -127,4 +127,3 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
     return OkexAdapters.adaptCandleStickData(historyCandle.getData(), currencyPair);
   }
 }
-}

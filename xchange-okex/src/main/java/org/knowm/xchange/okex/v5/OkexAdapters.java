@@ -374,5 +374,3 @@ public class OkexAdapters {
     return candleStickData;
   }
 }
-
-}
