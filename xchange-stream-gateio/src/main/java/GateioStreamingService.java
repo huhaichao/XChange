@@ -1,7 +1,6 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.GateioWebSocketSubscriptionMessage;
-import dto.response.GateioKlineResponse;
 import dto.response.GateioOrderBookResponse;
 import dto.response.GateioTradesResponse;
 import dto.response.GateioWebSocketTransaction;
@@ -59,13 +58,14 @@ public class GateioStreamingService extends JsonNettyStreamingService {
             msg -> {
               switch (channelName) {
                 case SPOT_ORDERBOOK_CHANNEL:
-                  return mapper.readValue(msg.toString(), GateioOrderBookResponse.class);
+                  return mapper.treeToValue(msg, GateioOrderBookResponse.class);
                 case SPOT_TRADES_CHANNEL:
+                  return mapper.treeToValue(msg, GateioTradesResponse.class);
                   return mapper.readValue(msg.toString(), GateioTradesResponse.class);
                 case SPOT_KLINE_CHANNEL:
                   return mapper.readValue(msg.toString(), GateioKlineResponse.class);
               }
-              return mapper.readValue(msg.toString(), GateioWebSocketTransaction.class);
+              return mapper.treeToValue(msg, GateioWebSocketTransaction.class);
             })
         .filter(t -> currencyPair.equals(t.getCurrencyPair()));
   }
@@ -95,7 +95,6 @@ public class GateioStreamingService extends JsonNettyStreamingService {
         .append(CHANNEL_NAME_DELIMITER)
         .append(currencyPairOrderBook)
         .append(currencyPairTradesTickers)
-         .append(currencyPairKline)
         .toString();
   }
 

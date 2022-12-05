@@ -4,10 +4,11 @@ public enum BinanceSubscriptionType {
   DEPTH("depth"),
   TRADE("trade"),
   TICKER("ticker"),
-  KLINE("kline"),
   BOOK_TICKER("bookTicker");
+  BOOK_TICKER("bookTicker"),
+  KLINE("kline");
 
-  private String type;
+  private final String type;
 
   BinanceSubscriptionType(String type) {
     this.type = type;
