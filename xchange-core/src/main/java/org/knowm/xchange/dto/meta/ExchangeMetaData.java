@@ -66,6 +66,16 @@ public class ExchangeMetaData implements Serializable {
   }
 
   public ExchangeMetaData(
+          Map<CurrencyPair, CurrencyPairMetaData> currencyPairs,
+          Map<Currency, CurrencyMetaData> currency,
+          Map<FuturesContract, DerivativeMetaData> futures,
+          RateLimit[] publicRateLimits,
+          RateLimit[] privateRateLimits,
+          Boolean shareRateLimits) {
+    this(currencyPairs, currency, futures, null, publicRateLimits, privateRateLimits, shareRateLimits);
+  }
+
+  public ExchangeMetaData(
       @JsonProperty("currency_pairs") Map<CurrencyPair, CurrencyPairMetaData> currencyPairs,
       @JsonProperty("currencies") Map<Currency, CurrencyMetaData> currency,
       @JsonProperty("futures") Map<FuturesContract, DerivativeMetaData> futures,

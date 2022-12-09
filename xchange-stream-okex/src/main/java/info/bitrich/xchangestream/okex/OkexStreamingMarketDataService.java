@@ -6,15 +6,10 @@ import info.bitrich.xchangestream.okex.dto.OkexSubscribeMessage;
 import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.reactivex.Observable;
 import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
+import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.okex.OkexAdapters;
-import org.knowm.xchange.okex.dto.marketdata.OkexOrderbook;
-import org.knowm.xchange.okex.dto.marketdata.OkexPublicOrder;
-import org.knowm.xchange.okex.dto.marketdata.OkexTicker;
-import org.knowm.xchange.okex.dto.marketdata.OkexTrade;
+import org.knowm.xchange.okex.dto.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +46,27 @@ public class OkexStreamingMarketDataService implements StreamingMarketDataServic
                 .flatMap(jsonNode -> {
                     List<OkexTicker> okexTickers = mapper.treeToValue(jsonNode.get("data"), mapper.getTypeFactory().constructCollectionType(List.class, OkexTicker.class));
                     return Observable.fromIterable(okexTickers).map(OkexAdapters::adaptTicker);
+                });
+    }
+
+
+    @Override
+    public Observable<Kline> getKlines(Instrument instrument, Object... args) {
+        String channel =
+                String.format(
+                        "candle%s",
+                        args==null? KlineInterval.h1.getCodeSimpleUppercase():((KlineInterval)args[0]).getCodeSimpleUppercase());
+        String instId = OkexAdapters.adaptInstrumentToOkexInstrumentId(instrument);
+        OkexSubscribeMessage.SubscriptionTopic topic = new OkexSubscribeMessage.SubscriptionTopic(channel, null, null, instId);
+        OkexSubscribeMessage osm = new OkexSubscribeMessage();
+        osm.setOp("subscribe");
+        osm.getArgs().add(topic);
+
+        return service
+                .subscribeChannel(channel, osm)
+                .flatMap(jsonNode -> {
+                    List<OkexCandleStick> okexTickers = mapper.treeToValue(jsonNode.get("data"), mapper.getTypeFactory().constructCollectionType(List.class, OkexCandleStick.class));
+                    return Observable.fromIterable(okexTickers).map(OkexAdapters::adaptCandles);
                 });
     }
 

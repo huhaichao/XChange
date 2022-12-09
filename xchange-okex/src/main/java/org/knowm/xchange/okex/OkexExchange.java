@@ -18,7 +18,7 @@ import si.mazi.rescu.SynchronizedValueFactory;
 import java.io.IOException;
 import java.util.List;
 
-import static org.knowm.xchange.okex.service.OkexMarketDataService.SPOT;
+import static org.knowm.xchange.okex.service.OkexMarketDataService.*;
 
 /** Author: Max Gao (gaamox@tutanota.com) Created: 08-06-2021 */
 public class OkexExchange extends BaseExchange {
@@ -101,11 +101,22 @@ public class OkexExchange extends BaseExchange {
 
   @Override
   public void remoteInit() throws IOException {
+    //spot
     List<OkexInstrument> instruments =
         ((OkexMarketDataServiceRaw) marketDataService)
             .getOkexInstruments(SPOT, null, null)
             .getData();
-
+    //SWAP
+    List<OkexInstrument> instrumentsSWAP =
+            ((OkexMarketDataServiceRaw) marketDataService)
+                    .getOkexInstruments(SWAP, null, null)
+                    .getData();
+    //FUTURES
+    List<OkexInstrument> instrumentsFUTURES =
+            ((OkexMarketDataServiceRaw) marketDataService)
+                    .getOkexInstruments(FUTURES, null, null)
+                    .getData();
+    instrumentsFUTURES.addAll(instrumentsSWAP);
     // Currency data and trade fee is only retrievable through a private endpoint
     List<OkexCurrency> currencies = null;
     List<OkexTradeFee> tradeFee = null;
@@ -120,7 +131,7 @@ public class OkexExchange extends BaseExchange {
     }
 
     exchangeMetaData =
-        OkexAdapters.adaptToExchangeMetaData(exchangeMetaData, instruments, currencies, tradeFee);
+        OkexAdapters.adaptToExchangeMetaData(exchangeMetaData, instruments, instrumentsFUTURES, currencies, tradeFee);
   }
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -30,7 +30,7 @@ public class FuturesContract extends Instrument
 
   @JsonCreator
   public FuturesContract(final String symbol) {
-    String[] parts = symbol.split("/");
+    String[] parts = symbol.contains("-")?symbol.split("-"):symbol.split("/");
     if (parts.length < 3) {
       throw new IllegalArgumentException("Could not parse futures contract from '" + symbol + "'");
     }

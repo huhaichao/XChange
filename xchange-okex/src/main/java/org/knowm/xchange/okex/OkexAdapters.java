@@ -1,5 +1,6 @@
 package org.knowm.xchange.okex;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -12,10 +13,7 @@ import org.knowm.xchange.dto.account.OpenPosition;
 import org.knowm.xchange.dto.account.OpenPositions;
 import org.knowm.xchange.dto.account.Wallet;
 import org.knowm.xchange.dto.marketdata.*;
-import org.knowm.xchange.dto.meta.CurrencyMetaData;
-import org.knowm.xchange.dto.meta.CurrencyPairMetaData;
-import org.knowm.xchange.dto.meta.ExchangeMetaData;
-import org.knowm.xchange.dto.meta.WalletHealth;
+import org.knowm.xchange.dto.meta.*;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.OpenOrders;
 import org.knowm.xchange.dto.trade.UserTrade;
@@ -249,6 +247,7 @@ public class OkexAdapters {
   public static ExchangeMetaData adaptToExchangeMetaData(
           ExchangeMetaData exchangeMetaData,
           List<OkexInstrument> instruments,
+          List<OkexInstrument> instrumentFutures,
           List<OkexCurrency> currs,
           List<OkexTradeFee> tradeFee) {
 
@@ -261,6 +260,11 @@ public class OkexAdapters {
         exchangeMetaData.getCurrencies() == null
             ? new HashMap<>()
             : exchangeMetaData.getCurrencies();
+
+     Map<FuturesContract, DerivativeMetaData> futures =
+             exchangeMetaData.getFutures() == null
+                     ? new HashMap<>()
+                     : exchangeMetaData.getFutures();;
 
     String makerFee = "0.5";
     if (tradeFee != null && !tradeFee.isEmpty()) {
@@ -293,6 +297,27 @@ public class OkexAdapters {
               true));
     }
 
+    for (OkexInstrument instrument : instrumentFutures) {
+      if (!"live".equals(instrument.getState())) {
+        continue;
+      }
+      FuturesContract pair = new FuturesContract(instrument.getInstrumentId());
+
+      //DerivativeMetaData staticMetaData = futures.get(pair);
+      int priceScale = numberOfDecimals(new BigDecimal(instrument.getTickSize()));
+      futures.put(
+              pair,
+              new DerivativeMetaData(
+                      new BigDecimal(makerFee).negate(),
+                      new BigDecimal(instrument.getMinSize()),
+                      null,
+                      null,
+                      priceScale,
+                      null,
+                      null,
+                      null));
+    }
+
     if (currs != null) {
       currs
           .forEach(
@@ -311,6 +336,7 @@ public class OkexAdapters {
     return new ExchangeMetaData(
         currencyPairs,
         currencies,
+        futures,
         exchangeMetaData.getPublicRateLimits(),
         exchangeMetaData.getPrivateRateLimits(),
         true);
@@ -361,6 +387,19 @@ public class OkexAdapters {
 
   private static BigDecimal checkForEmpty(String value) {
     return StringUtils.isEmpty(value) ? null : new BigDecimal(value);
+  }
+
+  public static Kline adaptCandles(OkexCandleStick candleStick) {
+    Date openTime = DateUtils.fromMillisUtc(candleStick.getTimestamp());
+    return new Kline.Builder()
+                .id(openTime.getTime())
+                .openTime(openTime)
+                .open( new BigDecimal(candleStick.getOpenPrice()))
+                .high(new BigDecimal(candleStick.getHighPrice()))
+                .low(new BigDecimal(candleStick.getLowPrice()))
+                .close(new BigDecimal(candleStick.getClosePrice()))
+                .amount(new BigDecimal(candleStick.getVolume()))
+                .build();
   }
 
   public static List<Kline> adaptCandles(List<OkexCandleStick> candles) {
