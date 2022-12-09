@@ -6,7 +6,6 @@ import org.knowm.xchange.binance.dto.marketdata.BinanceKline;
 import org.knowm.xchange.binance.dto.marketdata.KlineInterval;
 import java.util.Arrays;
 import java.util.Map;
-
 import static org.knowm.xchange.utils.StreamUtils.singletonCollector;
 
 public class KlineBinanceWebSocketTransaction extends ProductBinanceWebSocketTransaction {
