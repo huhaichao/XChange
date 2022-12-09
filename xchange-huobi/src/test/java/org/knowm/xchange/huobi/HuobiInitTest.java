@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class HuobiInitTest {
 
-    @Test
+    /*@Test
     public void init() throws IOException {
         Exchange exchange = ExchangeFactory.INSTANCE.createExchange(HuobiExchange.class);
 
@@ -23,5 +23,5 @@ public class HuobiInitTest {
         // GET Klines
         Arrays.stream(marketDataService.getKlines(CurrencyPair.BTC_USDT, KlineInterval.m5, 10))
                 .forEach(System.out::println);
-    }
+    }*/
 }

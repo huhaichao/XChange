@@ -18,6 +18,10 @@ public class Symbol {
 
   private String status;
 
+  private String contractStatus;
+
+  private String contractType;
+
   private String quotePrecision;
 
   private String quoteAssetPrecision;
@@ -167,5 +171,21 @@ public class Symbol {
         + ", permissions = "
         + permissions
         + "]";
+  }
+
+  public String getContractStatus() {
+    return contractStatus;
+  }
+
+  public void setContractStatus(String contractStatus) {
+    this.contractStatus = contractStatus;
+  }
+
+  public String getContractType() {
+    return contractType;
+  }
+
+  public void setContractType(String contractType) {
+    this.contractType = contractType;
   }
 }

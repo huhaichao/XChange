@@ -1,4 +1,4 @@
-package org.knowm.xchange.okex.v5.service;
+package org.knowm.xchange.okex.service;
 
 import org.knowm.xchange.client.ResilienceRegistries;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -7,7 +7,6 @@ import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.marketdata.Trades;
 import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.dto.marketdata.*;
-import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.okex.OkexAdapters;
 import org.knowm.xchange.okex.OkexExchange;
@@ -17,6 +16,7 @@ import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.knowm.xchange.service.trade.params.CandleStickDataParams;
 import org.knowm.xchange.service.trade.params.DefaultCandleStickParam;
 import org.knowm.xchange.service.trade.params.DefaultCandleStickParamWithLimit;
+import org.knowm.xchange.utils.DateUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -81,7 +81,7 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
       bar = bar.toUpperCase();
     }
     return new Klines(exchange.getExchangeType(),
-            OkexAdapters.adaptCandles(getCandles(OkexAdapters.adaptCurrencyPairId(currencyPair),end,start,bar,String.valueOf(limit)).getData()),
+            OkexAdapters.adaptCandles(getCandles(OkexAdapters.adaptInstrumentToOkexInstrumentId(currencyPair),end,start,bar,String.valueOf(limit)).getData()),
             currencyPair,
             klineInterval,
             limit,

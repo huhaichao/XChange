@@ -9,7 +9,7 @@
 
   <groupId>org.knowm.xchange</groupId>
   <artifactId>xchange-parent</artifactId>
-  <version>5.0.11-XQUANT</version>
+  <version>5.0.12-XQUANT</version>
   <packaging>pom</packaging>
 
   <name>XChange</name>
@@ -213,6 +213,7 @@
     <module>xchange-stream-kraken</module>
     <module>xchange-stream-lgo</module>
     <module>xchange-stream-okcoin</module>
+    <module>xchange-stream-okex</module>
     <module>xchange-stream-poloniex2</module>
     <module>xchange-stream-serum</module>
     <module>xchange-stream-service-core</module>

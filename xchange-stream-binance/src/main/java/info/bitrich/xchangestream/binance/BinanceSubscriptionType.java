@@ -4,9 +4,9 @@ public enum BinanceSubscriptionType {
   DEPTH("depth"),
   TRADE("trade"),
   TICKER("ticker"),
-  BOOK_TICKER("bookTicker");
   BOOK_TICKER("bookTicker"),
-  KLINE("kline");
+  KLINE("kline"),
+  CONTINUOUSKLINE("continuousKline");
 
   private final String type;
 

@@ -11,7 +11,7 @@ public class BinanceFutureStreamingExchange extends BinanceStreamingExchange {
 
   @Override
   public ExchangeType getExchangeType(){
-    return ExchangeType.BINANCEFUTURESTREAM;
+    return ExchangeType.BINANCEUSDSFUTURE;
   }
 
   protected String getStreamingBaseUri() {

@@ -132,7 +132,7 @@ public class BinanceExchange extends BaseExchange {
     Symbol[] symbols = exchangeInfo.getSymbols();
 
     for (Symbol symbol : symbols) {
-      if (symbol.getStatus().equals("TRADING")) { // Symbols which are trading
+      if ("TRADING".equals(symbol.getStatus()) || "TRADING".equals(symbol.getContractStatus())) { // Symbols which are trading
         int basePrecision = Integer.parseInt(symbol.getBaseAssetPrecision());
         int counterPrecision = Integer.parseInt(symbol.getQuotePrecision());
         int pairPrecision = 8;
@@ -160,7 +160,7 @@ public class BinanceExchange extends BaseExchange {
             maxQty = new BigDecimal(filter.getMaxQty()).stripTrailingZeros();
             stepSize = new BigDecimal(filter.getStepSize()).stripTrailingZeros();
           } else if (filter.getFilterType().equals("MIN_NOTIONAL")) {
-            counterMinQty = new BigDecimal(filter.getMinNotional()).stripTrailingZeros();
+            counterMinQty = filter.getMinNotional() == null ? BigDecimal.ZERO: new BigDecimal(filter.getMinNotional()).stripTrailingZeros();
           }
         }
 

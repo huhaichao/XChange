@@ -1,4 +1,4 @@
-package org.knowm.xchange.okex.v5;
+package org.knowm.xchange.okex;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchange.currency.Currency;
@@ -21,15 +21,7 @@ import org.knowm.xchange.dto.trade.OpenOrders;
 import org.knowm.xchange.dto.trade.UserTrade;
 import org.knowm.xchange.dto.trade.UserTrades;
 import org.knowm.xchange.instrument.Instrument;
-import org.knowm.xchange.okex.v5.dto.OkexException;
-import org.knowm.xchange.okex.v5.dto.OkexResponse;
-import org.knowm.xchange.okex.v5.dto.account.OkexAssetBalance;
-import org.knowm.xchange.okex.v5.dto.account.OkexTradeFee;
-import org.knowm.xchange.okex.v5.dto.account.OkexWalletBalance;
-import org.knowm.xchange.okex.v5.dto.marketdata.*;
-import org.knowm.xchange.okex.v5.dto.trade.OkexAmendOrderRequest;
-import org.knowm.xchange.okex.v5.dto.trade.OkexOrderDetails;
-import org.knowm.xchange.okex.v5.dto.trade.OkexOrderRequest;
+import org.knowm.xchange.okex.dto.OkexException;
 import org.knowm.xchange.utils.DateUtils;
 import org.knowm.xchange.okex.dto.account.OkexAssetBalance;
 import org.knowm.xchange.okex.dto.account.OkexPosition;

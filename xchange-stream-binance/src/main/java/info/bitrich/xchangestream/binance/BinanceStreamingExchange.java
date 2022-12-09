@@ -3,6 +3,7 @@ package info.bitrich.xchangestream.binance;
 import info.bitrich.xchangestream.binance.BinanceUserDataChannel.NoActiveChannelException;
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.core.StreamingExchange;
+import info.bitrich.xchangestream.dto.WrapCurrency;
 import info.bitrich.xchangestream.service.netty.ConnectionStateModel.State;
 import info.bitrich.xchangestream.util.Events;
 import io.reactivex.Completable;
@@ -22,12 +23,7 @@ import org.knowm.xchange.client.ExchangeRestProxyBuilder;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
 
@@ -269,6 +265,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
   public String buildSubscriptionStreams(ProductSubscription subscription) {
     return Stream.of(
+            buildSubscriptionKlineStrings(subscription.getKlines(),BinanceSubscriptionType.KLINE.getType()),
             buildSubscriptionStrings(
                 subscription.getTicker(),
                 realtimeOrderBookTicker

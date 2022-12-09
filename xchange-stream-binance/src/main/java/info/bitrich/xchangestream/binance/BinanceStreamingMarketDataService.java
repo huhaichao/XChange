@@ -6,13 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
 import info.bitrich.xchangestream.binance.dto.*;
-import info.bitrich.xchangestream.binance.dto.BinanceRawTrade;
-import info.bitrich.xchangestream.binance.dto.BinanceWebsocketTransaction;
-import info.bitrich.xchangestream.binance.dto.BookTickerBinanceWebSocketTransaction;
-import info.bitrich.xchangestream.binance.dto.DepthBinanceWebSocketTransaction;
-import info.bitrich.xchangestream.binance.dto.KlineBinanceWebSocketTransaction;
-import info.bitrich.xchangestream.binance.dto.TickerBinanceWebsocketTransaction;
-import info.bitrich.xchangestream.binance.dto.TradeBinanceWebsocketTransaction;
 import info.bitrich.xchangestream.binance.exceptions.UpFrontSubscriptionRequiredException;
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
@@ -33,7 +26,6 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.exceptions.ExchangeException;
-import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.exceptions.RateLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +52,6 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
   private static final JavaType BOOK_TICKER_TYPE = getBookTickerType();
   private static final JavaType TRADE_TYPE = getTradeType();
   private static final JavaType DEPTH_TYPE = getDepthType();
-  private static final JavaType KLINE_TYPE = getKlineType();
 
   private final BinanceStreamingService service;
   private final String orderBookUpdateFrequencyParameter;
@@ -68,7 +59,7 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
   private final int oderBookFetchLimitParameter;
 
   private final Map<CurrencyPair, Observable<BinanceTicker24h>> tickerSubscriptions;
-  private final Map<WrapCurrency, Observable<BinanceKline>> klineSubscriptions;
+  private final Map<WrapCurrency, Observable<BinanceKline>> klineSubscriptionsWrap;
   private final Map<CurrencyPair, Observable<BinanceBookTicker>> bookTickerSubscriptions;
   private final Map<CurrencyPair, Observable<OrderBook>> orderbookSubscriptions;
   private final Map<CurrencyPair, Observable<BinanceRawTrade>> tradeSubscriptions;
@@ -97,7 +88,6 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
     this.oderBookFetchLimitParameter = oderBookFetchLimitParameter;
     this.marketDataService = marketDataService;
     this.onApiCall = onApiCall;
-    this.klineSubscriptions = new ConcurrentHashMap<>();
     this.tickerSubscriptions = new ConcurrentHashMap<>();
     this.bookTickerSubscriptions = new ConcurrentHashMap<>();
     this.orderbookSubscriptions = new ConcurrentHashMap<>();
@@ -105,6 +95,7 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
     this.orderBookUpdatesSubscriptions = new ConcurrentHashMap<>();
     this.orderBookRawUpdatesSubscriptions = new ConcurrentHashMap<>();
     this.klineSubscriptions = new ConcurrentHashMap<>();
+    this.klineSubscriptionsWrap = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -123,14 +114,24 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
   }
 
   public Observable<BinanceKline> getRawKline(CurrencyPair currencyPair, Object... args) {
-    WrapCurrency wrapCurrency = new WrapCurrency(currencyPair,(KlineInterval)args[0]);
+
+    WrapCurrency wrapCurrency = new WrapCurrency(currencyPair,(org.knowm.xchange.dto.marketdata.KlineInterval)args[0]);
     if (!service.isLiveSubscriptionEnabled()
             && !service.getProductSubscription().getKlines().contains(wrapCurrency)) {
       throw new UpFrontSubscriptionRequiredException();
     }
-    return klineSubscriptions.computeIfAbsent(
-            wrapCurrency, s -> triggerObservableBody(rawKlineStream(wrapCurrency.getCurrencyPair(),
-                    wrapCurrency.getKlineInterval().getCodeSimple())).share());
+    if (args.length == 1){
+      return klineSubscriptionsWrap.computeIfAbsent(
+              wrapCurrency, s -> triggerObservableBody(rawKlineStream(wrapCurrency.getCurrencyPair(),
+                      wrapCurrency.getKlineInterval().getCodeSimple(), wrapCurrency.getContractType())).share());
+
+    }
+    WrapCurrency  wrapCurrencyContract = new WrapCurrency(currencyPair,(org.knowm.xchange.dto.marketdata.KlineInterval)args[0], (String)args[1]);
+
+    return klineSubscriptionsWrap.computeIfAbsent(
+            wrapCurrency, s -> triggerObservableBody(rawKlineStream(wrapCurrencyContract.getCurrencyPair(),
+                    wrapCurrencyContract.getKlineInterval().getCodeSimple(), wrapCurrencyContract.getContractType())).share());
+
   }
 
   public Observable<BinanceTicker24h> getRawTicker(CurrencyPair currencyPair, Object... args) {
@@ -266,6 +267,15 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
     return currencyChannel;
   }
 
+  private String channelFromCurrency(CurrencyPair currencyPair, String subscriptionType, String interval, String contractType) {
+    if (contractType == null){
+      return channelFromCurrency(currencyPair, subscriptionType, interval);
+    }
+    String currency = String.join("", currencyPair.toString().split("/")).toLowerCase();
+    String currencyChannel = currency + "_" + contractType + subscriptionType + "_" + interval;
+    return currencyChannel;
+  }
+
   private String channelFromCurrency(CurrencyPair currencyPair, String subscriptionType) {
     String currency = getChannelPrefix(currencyPair);
     String currencyChannel = currency + "@" + subscriptionType;
@@ -347,13 +357,12 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
       case TICKER:
         tickerSubscriptions.remove(currencyPair);
         break;
-      case KLINE:
-        klineSubscriptions.remove(currencyPair);
-        break;
       case BOOK_TICKER:
         bookTickerSubscriptions.remove(currencyPair);
         break;
       case KLINE:
+        WrapCurrency wrapCurrency = new WrapCurrency(currencyPair,(org.knowm.xchange.dto.marketdata.KlineInterval.parseFromCode(klineInterval.code())));
+        klineSubscriptionsWrap.remove(wrapCurrency);
         klineSubscriptions.computeIfPresent(currencyPair, (k, intervalMap) -> {
           intervalMap.remove(klineInterval);
           return intervalMap;
@@ -386,9 +395,9 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
   }
 
   private void initKlineSubscription(WrapCurrency wrapCurrency) {
-      klineSubscriptions.put(
+    klineSubscriptionsWrap.put(
               wrapCurrency, triggerObservableBody(rawKlineStream(wrapCurrency.getCurrencyPair(),
-                      wrapCurrency.getKlineInterval().getCodeSimple())).share());
+                      wrapCurrency.getKlineInterval().getCodeSimple(), wrapCurrency.getContractType())).share());
   }
 
   private void initRawOrderBookUpdatesSubscription(CurrencyPair currencyPair) {
@@ -407,16 +416,20 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
         .map(transaction -> transaction.getData().getTicker());
   }
 
-  private Observable<BinanceKline> rawKlineStream(CurrencyPair currencyPair, String interval) {
+  /*private Observable<BinanceKline> rawKlineStream(CurrencyPair currencyPair, String interval) {
+    return rawKlineStream(currencyPair, interval, null);
+  }*/
+
+  private Observable<BinanceKline> rawKlineStream(CurrencyPair currencyPair, String interval, String contractType) {
     return service
             .subscribeChannel(
-                    channelFromCurrency(currencyPair, BinanceSubscriptionType.KLINE.getType(), interval))
+                    channelFromCurrency(currencyPair,contractType == null ? BinanceSubscriptionType.KLINE.getType() : BinanceSubscriptionType.CONTINUOUSKLINE.getType(), interval,contractType ))
             .map(
-                    it -> this.<KlineBinanceWebsocketTransaction>readTransaction(it, KLINE_TYPE, "kline"))
+                    it -> this.<KlineBinanceWebSocketTransaction>readTransaction(it, KLINE_TYPE, "kline"))
             .filter(
                     transaction -> transaction.getData().getCurrencyPair().equals(currencyPair)
-                            && transaction.getData().getKline().getInterval().getCodeSimple().equals(interval))
-            .map(transaction -> transaction.getData().getKline());
+                            && transaction.getData().getBinanceKline().getInterval().getCodeSimple().equals(interval))
+            .map(transaction -> transaction.getData().getBinanceKline());
   }
 
 
@@ -653,7 +666,7 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
     return getObjectMapper()
             .getTypeFactory()
             .constructType(
-                    new TypeReference<BinanceWebsocketTransaction<KlineBinanceWebsocketTransaction>>() {});
+                    new TypeReference<BinanceWebsocketTransaction<KlineBinanceWebSocketTransaction>>() {});
   }
 
   private static JavaType getBookTickerType() {
@@ -676,12 +689,5 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
         .getTypeFactory()
         .constructType(
             new TypeReference<BinanceWebsocketTransaction<DepthBinanceWebSocketTransaction>>() {});
-  }
-
-  private static JavaType getKlineType() {
-    return getObjectMapper()
-        .getTypeFactory()
-        .constructType(
-            new TypeReference<BinanceWebsocketTransaction<KlineBinanceWebSocketTransaction>>() {});
   }
 }
