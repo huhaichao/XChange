@@ -43,11 +43,21 @@ public interface MarketDataService extends BaseService {
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 
+  @Deprecated
   default Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
     throw new NotYetImplementedForExchangeException("getKlines");
   }
 
+  @Deprecated
   default Klines getHistoryKlines(CurrencyPair currencyPair, Object... args) throws IOException {
+    throw new NotYetImplementedForExchangeException("getTicker");
+  }
+
+  default Klines getKlines(Instrument instrument, Object... args) throws IOException {
+    throw new NotYetImplementedForExchangeException("getKlines");
+  }
+
+  default Klines getHistoryKlines(Instrument instrument, Object... args) throws IOException {
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 

@@ -5,11 +5,12 @@ import java.text.SimpleDateFormat;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Kline;
 import org.knowm.xchange.dto.marketdata.KlineInterval;
+import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.utils.DateUtils;
 
 public final class BinanceKline {
 
-  private final CurrencyPair pair;
+  private final Instrument pair;
   private final KlineInterval interval;
   private final Long id;
   private final long openTime;
@@ -24,7 +25,7 @@ public final class BinanceKline {
   private final BigDecimal takerBuyBaseAssetVolume;
   private final BigDecimal takerBuyQuoteAssetVolume;
   private  Kline kline;
-  public BinanceKline(CurrencyPair pair, KlineInterval interval, Object[] obj) {
+  public BinanceKline(Instrument pair, KlineInterval interval, Object[] obj) {
     this.pair = pair;
     this.interval = interval;
     this.openTime = Long.valueOf(obj[0].toString());
@@ -71,7 +72,7 @@ public final class BinanceKline {
     this.takerBuyQuoteAssetVolume = takerBuyQuoteAssetVolume;
   }
 
-  public CurrencyPair getCurrencyPair() {
+  public Instrument getCurrencyPair() {
     return pair;
   }
 

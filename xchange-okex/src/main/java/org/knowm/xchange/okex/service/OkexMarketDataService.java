@@ -56,8 +56,13 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
         getOkexTrades(OkexAdapters.adaptInstrumentToOkexInstrumentId(currencyPair), 100).getData(), currencyPair);
   }
 
-  @Override
+
   public Klines getKlines(CurrencyPair currencyPair, Object... args) throws IOException {
+          return getKlines(currencyPair, args);
+  }
+
+  @Override
+  public Klines getKlines(Instrument instrument, Object... args) throws IOException {
     String start = null;
     String end = null;
     KlineInterval klineInterval = (KlineInterval)args[0];
@@ -81,8 +86,8 @@ public class OkexMarketDataService extends OkexMarketDataServiceRaw implements M
       bar = bar.toUpperCase();
     }
     return new Klines(exchange.getExchangeType(),
-            OkexAdapters.adaptCandles(getCandles(OkexAdapters.adaptInstrumentToOkexInstrumentId(currencyPair),end,start,bar,String.valueOf(limit)).getData()),
-            currencyPair,
+            OkexAdapters.adaptCandles(getCandles(OkexAdapters.adaptInstrumentToOkexInstrumentId(instrument),end,start,bar,String.valueOf(limit)).getData()),
+            instrument,
             klineInterval,
             limit,
             start ==null ? null: DateUtils.fromISODateString(start),end==null ? null:DateUtils.fromISODateString(end));

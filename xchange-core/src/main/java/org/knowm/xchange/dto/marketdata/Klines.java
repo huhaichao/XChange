@@ -2,6 +2,7 @@ package org.knowm.xchange.dto.marketdata;
 
 import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.instrument.Instrument;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +14,7 @@ public final class Klines implements Serializable {
 
     private final List<Kline> klines ;
 
-    private final CurrencyPair pair;
+    private final Instrument pair;
 
     private final KlineInterval interval;
 
@@ -23,7 +24,7 @@ public final class Klines implements Serializable {
 
     private final Date endTime ;
 
-    public Klines(List<Kline> klines, CurrencyPair pair, KlineInterval interval, Integer limit) {
+    public Klines(List<Kline> klines, Instrument pair, KlineInterval interval, Integer limit) {
         this.exchangeType = null;
         this.klines = klines;
         this.pair = pair;
@@ -32,7 +33,7 @@ public final class Klines implements Serializable {
         this.startTime = null;
         this.endTime = null ;
     }
-    public Klines(ExchangeType exchangeType, List<Kline> klines, CurrencyPair pair, KlineInterval interval, Integer limit) {
+    public Klines(ExchangeType exchangeType, List<Kline> klines, Instrument pair, KlineInterval interval, Integer limit) {
         this.exchangeType = exchangeType;
         this.klines = klines;
         this.pair = pair;
@@ -42,7 +43,7 @@ public final class Klines implements Serializable {
         this.endTime = null ;
     }
 
-    public Klines(List<Kline> klines, CurrencyPair pair, KlineInterval interval, Integer limit, Date startTime, Date endTime) {
+    public Klines(List<Kline> klines, Instrument pair, KlineInterval interval, Integer limit, Date startTime, Date endTime) {
         this.exchangeType = null;
         this.klines = klines;
         this.pair = pair;
@@ -52,7 +53,7 @@ public final class Klines implements Serializable {
         this.endTime = endTime;
     }
 
-    public Klines(ExchangeType exchangeType, List<Kline> klines, CurrencyPair pair, KlineInterval interval, Integer limit, Date startTime, Date endTime) {
+    public Klines(ExchangeType exchangeType, List<Kline> klines, Instrument pair, KlineInterval interval, Integer limit, Date startTime, Date endTime) {
         this.exchangeType = exchangeType;
         this.klines = klines;
         this.pair = pair;
@@ -66,7 +67,7 @@ public final class Klines implements Serializable {
         return klines;
     }
 
-    public CurrencyPair getPair() {
+    public Instrument getPair() {
         return pair;
     }
 

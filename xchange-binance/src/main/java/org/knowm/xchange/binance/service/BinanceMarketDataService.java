@@ -30,6 +30,7 @@ import org.knowm.xchange.dto.marketdata.Trades.TradeSortType;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
+import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.knowm.xchange.service.marketdata.params.Params;
 import org.knowm.xchange.service.trade.params.CandleStickDataParams;
@@ -50,6 +51,16 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
   @Override
   public OrderBook getOrderBook(CurrencyPair pair, Object... args) throws IOException {
     try {
+
+      return getOrderBook(pair, args);
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  @Override
+  public OrderBook getOrderBook(Instrument pair, Object... args) throws IOException {
+    try {
       int limitDepth = 100;
 
       if (args != null && args.length == 1) {
@@ -67,20 +78,35 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
     }
   }
 
+  @Deprecated
   public static OrderBook convertOrderBook(BinanceOrderbook ob, CurrencyPair pair) {
+    return convertOrderBook(ob, pair);
+  }
+
+  public static OrderBook convertOrderBook(BinanceOrderbook ob, Instrument pair) {
     List<LimitOrder> bids =
-        ob.bids.entrySet().stream()
-            .map(e -> new LimitOrder(OrderType.BID, e.getValue(), pair, null, null, e.getKey()))
-            .collect(Collectors.toList());
+            ob.bids.entrySet().stream()
+                    .map(e -> new LimitOrder(OrderType.BID, e.getValue(), pair, null, null, e.getKey()))
+                    .collect(Collectors.toList());
     List<LimitOrder> asks =
-        ob.asks.entrySet().stream()
-            .map(e -> new LimitOrder(OrderType.ASK, e.getValue(), pair, null, null, e.getKey()))
-            .collect(Collectors.toList());
+            ob.asks.entrySet().stream()
+                    .map(e -> new LimitOrder(OrderType.ASK, e.getValue(), pair, null, null, e.getKey()))
+                    .collect(Collectors.toList());
     return new OrderBook(null, asks, bids);
   }
 
   @Override
   public Ticker getTicker(CurrencyPair pair, Object... args) throws IOException {
+    try {
+      return getTicker(pair, args);
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+
+  @Override
+  public Ticker getTicker(Instrument pair, Object... args) throws IOException {
     try {
       return ticker24h(pair).toTicker();
     } catch (BinanceException e) {
@@ -112,25 +138,34 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
   @Override
   public Trades getTrades(CurrencyPair pair, Object... args) throws IOException {
     try {
+      return getTrades(pair, args);
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  @Override
+  public Trades getTrades(Instrument pair, Object... args) throws IOException {
+    try {
       Long fromId = tradesArgument(args, 0, Long::valueOf);
       Long startTime = tradesArgument(args, 1, Long::valueOf);
       Long endTime = tradesArgument(args, 2, Long::valueOf);
       Integer limit = tradesArgument(args, 3, Integer::valueOf);
       List<BinanceAggTrades> aggTrades =
-          binance.aggTrades(BinanceAdapters.toSymbol(pair), fromId, startTime, endTime, limit);
+              binance.aggTrades(BinanceAdapters.toSymbol(pair), fromId, startTime, endTime, limit);
       List<Trade> trades =
-          aggTrades.stream()
-              .map(
-                  at ->
-                      new Trade.Builder()
-                          .type(BinanceAdapters.convertType(at.buyerMaker))
-                          .originalAmount(at.quantity)
-                          .currencyPair(pair)
-                          .price(at.price)
-                          .timestamp(at.getTimestamp())
-                          .id(Long.toString(at.aggregateTradeId))
-                          .build())
-              .collect(Collectors.toList());
+              aggTrades.stream()
+                      .map(
+                              at ->
+                                      new Trade.Builder()
+                                              .type(BinanceAdapters.convertType(at.buyerMaker))
+                                              .originalAmount(at.quantity)
+                                              .instrument(pair)
+                                              .price(at.price)
+                                              .timestamp(at.getTimestamp())
+                                              .id(Long.toString(at.aggregateTradeId))
+                                              .build())
+                      .collect(Collectors.toList());
       return new Trades(trades, TradeSortType.SortByTimestamp);
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);

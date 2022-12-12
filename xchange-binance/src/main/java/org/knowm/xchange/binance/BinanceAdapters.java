@@ -22,6 +22,7 @@ import org.knowm.xchange.binance.dto.trade.OrderStatus;
 import org.knowm.xchange.binance.service.BinanceTradeService.BinanceOrderFlags;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.derivative.FuturesContract;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.marketdata.CandleStick;
@@ -32,6 +33,7 @@ import org.knowm.xchange.dto.meta.WalletHealth;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.MarketOrder;
 import org.knowm.xchange.dto.trade.StopOrder;
+import org.knowm.xchange.instrument.Instrument;
 
 public class BinanceAdapters {
   private static final DateTimeFormatter DATE_TIME_FMT =
@@ -53,11 +55,21 @@ public class BinanceAdapters {
     return LocalDateTime.parse(dateTime, DATE_TIME_FMT);
   }
 
-  public static String toSymbol(CurrencyPair pair) {
-    if (pair.equals(CurrencyPair.IOTA_BTC)) {
-      return "IOTABTC";
+  public static String toSymbol(Instrument pair) {
+    if (pair instanceof CurrencyPair){
+      CurrencyPair currencyPair = (CurrencyPair)pair;
+      if (currencyPair.equals(CurrencyPair.IOTA_BTC)) {
+        return "IOTABTC";
+      }
+      return currencyPair.base.getCurrencyCode() + currencyPair.counter.getCurrencyCode();
+    }else if (pair instanceof FuturesContract){
+      FuturesContract futuresContract = (FuturesContract)pair;
+      return futuresContract.getCurrencyPair().base.getCurrencyCode()
+              + futuresContract.getCurrencyPair().counter.getCurrencyCode()
+              +"_"
+              +futuresContract.getPrompt();
     }
-    return pair.base.getCurrencyCode() + pair.counter.getCurrencyCode();
+    return null;
   }
 
   public static String toSymbol(Currency currency) {

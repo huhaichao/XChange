@@ -264,7 +264,7 @@ public class OkexAdapters {
      Map<FuturesContract, DerivativeMetaData> futures =
              exchangeMetaData.getFutures() == null
                      ? new HashMap<>()
-                     : exchangeMetaData.getFutures();;
+                     : exchangeMetaData.getFutures();
 
     String makerFee = "0.5";
     if (tradeFee != null && !tradeFee.isEmpty()) {

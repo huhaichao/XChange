@@ -2,6 +2,7 @@ package org.knowm.xchange.binance;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import org.knowm.xchange.BaseExchange;
 import org.knowm.xchange.ExchangeSpecification;
@@ -17,8 +18,11 @@ import org.knowm.xchange.client.ExchangeRestProxyBuilder;
 import org.knowm.xchange.client.ResilienceRegistries;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.derivative.FuturesContract;
 import org.knowm.xchange.dto.meta.CurrencyMetaData;
 import org.knowm.xchange.dto.meta.CurrencyPairMetaData;
+import org.knowm.xchange.dto.meta.DerivativeMetaData;
+import org.knowm.xchange.dto.meta.ExchangeMetaData;
 import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.utils.AuthUtils;
 import si.mazi.rescu.SynchronizedValueFactory;
@@ -123,7 +127,9 @@ public class BinanceExchange extends BaseExchange {
     // populate currency pair keys only, exchange does not provide any other metadata for download
     Map<CurrencyPair, CurrencyPairMetaData> currencyPairs = exchangeMetaData.getCurrencyPairs();
     Map<Currency, CurrencyMetaData> currencies = exchangeMetaData.getCurrencies();
-
+    Map<FuturesContract, DerivativeMetaData>  futuresContracts=  exchangeMetaData.getFutures() == null
+            ? new HashMap<>()
+            : exchangeMetaData.getFutures();;
     // Clear all hardcoded currencies when loading dynamically from exchange.
     if (assetDetailMap != null) {
       currencies.clear();
@@ -165,22 +171,40 @@ public class BinanceExchange extends BaseExchange {
         }
 
         boolean marketOrderAllowed = Arrays.asList(symbol.getOrderTypes()).contains("MARKET");
-        currencyPairs.put(
-            currentCurrencyPair,
-            new CurrencyPairMetaData(
-                new BigDecimal("0.1"), // Trading fee at Binance is 0.1 %
-                minQty, // Min amount
-                maxQty, // Max amount
-                counterMinQty,
-                counterMaxQty,
-                amountPrecision, // base precision
-                pairPrecision, // counter precision
-                null,
-                null, /* TODO get fee tiers, although this is not necessary now
+        if ("TRADING".equals(symbol.getStatus()) && symbol.getContractType() == null){
+          currencyPairs.put(
+                  currentCurrencyPair,
+                  new CurrencyPairMetaData(
+                          new BigDecimal("0.1"), // Trading fee at Binance is 0.1 %
+                          minQty, // Min amount
+                          maxQty, // Max amount
+                          counterMinQty,
+                          counterMaxQty,
+                          amountPrecision, // base precision
+                          pairPrecision, // counter precision
+                          null,
+                          null, /* TODO get fee tiers, although this is not necessary now
                       because their API returns current fee directly */
-                stepSize,
-                null,
-                marketOrderAllowed));
+                          stepSize,
+                          null,
+                          marketOrderAllowed));
+        }else if ("TRADING".equals(symbol.getContractStatus()) || symbol.getContractType() != null){
+          String prompt = symbol.getSymbol().contains("_")?symbol.getSymbol()
+                  .replace(symbol.getBaseAsset().concat(symbol.getQuoteAsset()).concat("_"),""):"PERP";
+          FuturesContract pair = new FuturesContract(currentCurrencyPair,prompt);
+          futuresContracts.put(
+                  pair,
+                  new DerivativeMetaData(
+                          new BigDecimal("0.1").negate(),
+                          minQty,
+                          maxQty,
+                          null,
+                          pairPrecision,
+                          null,
+                          null,
+                          stepSize));
+        }
+
 
         Currency baseCurrency = currentCurrencyPair.base;
         CurrencyMetaData baseCurrencyMetaData =
@@ -195,6 +219,13 @@ public class BinanceExchange extends BaseExchange {
         currencies.put(counterCurrency, counterCurrencyMetaData);
       }
     }
+    exchangeMetaData = new ExchangeMetaData(
+            currencyPairs,
+            currencies,
+            futuresContracts,
+            exchangeMetaData.getPublicRateLimits(),
+            exchangeMetaData.getPrivateRateLimits(),
+            true);
   }
 
   private boolean isAuthenticated() {
