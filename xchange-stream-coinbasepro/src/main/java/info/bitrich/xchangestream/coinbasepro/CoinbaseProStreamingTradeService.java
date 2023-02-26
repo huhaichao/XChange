@@ -30,7 +30,13 @@ public class CoinbaseProStreamingTradeService implements StreamingTradeService {
   }
 
   private boolean containsPair(List<Instrument> pairs, CurrencyPair pair) {
-    return pairs.stream().anyMatch(p -> p.equals(pair));
+    for (Instrument item : pairs) {
+      if (pair.compareTo((CurrencyPair) item) == 0) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @Override

@@ -50,23 +50,20 @@ public interface Okex {
       throws IOException, OkexException;
 
   @GET
+  @Path("/market/ticker")
+  @Consumes(MediaType.APPLICATION_JSON)
+  OkexResponse<List<OkexTicker>> getTicker(
+          @QueryParam("instId") String instrument,
+          @HeaderParam("X-SIMULATED-TRADING") String simulatedTrading)
+          throws IOException, OkexException;
+
+  @GET
   @Path("/market/books")
   OkexResponse<List<OkexOrderbook>> getOrderbook(
       @QueryParam("instId") String instrument,
       @QueryParam("sz") int depth,
       @HeaderParam("X-SIMULATED-TRADING") String simulatedTrading)
       throws IOException, OkexException;
-
-  @GET
-  @Path("/market/candles")
-  OkexResponse<List<OkexCandleStick>> getCandles(
-          @QueryParam("instId") String instrument,
-          @QueryParam("after") String after,
-          @QueryParam("before") String before,
-          @QueryParam("bar") String bar,
-          @QueryParam("limit") String limit,
-          @HeaderParam("X-SIMULATED-TRADING") String simulatedTrading)
-          throws IOException, OkexException;
 
   @GET
   @Path("/market/history-candles")
@@ -79,9 +76,11 @@ public interface Okex {
       @HeaderParam("X-SIMULATED-TRADING") String simulatedTrading)
       throws IOException, OkexException;
 
-
   @GET
   @Path("/public/funding-rate")
-  OkexResponse<OkexFundingRate> getFundingRate(@QueryParam("instId") String instrument)
+  OkexResponse<List<OkexFundingRate>> getFundingRate(
+          @QueryParam("instId") String instrument,
+          @HeaderParam("X-SIMULATED-TRADING") String simulatedTrading)
           throws IOException, OkexException;
+
 }

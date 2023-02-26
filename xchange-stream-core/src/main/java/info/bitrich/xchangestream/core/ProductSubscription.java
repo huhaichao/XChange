@@ -5,12 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import info.bitrich.xchangestream.dto.WrapCurrency;
 import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.derivative.FuturesContract;
-import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.instrument.Instrument;
 
 /**
@@ -21,20 +16,19 @@ public class ProductSubscription {
   private final List<Instrument> orderBook;
   private final List<Instrument> trades;
   private final List<Instrument> ticker;
-  private final List<WrapCurrency> klines;
   private final List<Instrument> userTrades;
   private final List<Instrument> orders;
+  private final List<Instrument> fundingRates;
   private final List<Currency> balances;
-
 
   private ProductSubscription(ProductSubscriptionBuilder builder) {
     this.orderBook = asList(builder.orderBook);
     this.trades = asList(builder.trades);
     this.ticker = asList(builder.ticker);
     this.orders = asList(builder.orders);
+    this.fundingRates = asList(builder.fundingRates);
     this.userTrades = asList(builder.userTrades);
     this.balances = asList(builder.balances);
-    this.klines = asList(builder.klines);
   }
 
   private <T> List<T> asList(Iterable<T> collection) {
@@ -59,6 +53,10 @@ public class ProductSubscription {
     return orders;
   }
 
+  public List<Instrument> getFundingRates() {
+    return fundingRates;
+  }
+
   public List<Instrument> getUserTrades() {
     return userTrades;
   }
@@ -76,24 +74,20 @@ public class ProductSubscription {
   }
 
   public boolean hasUnauthenticated() {
-    return !ticker.isEmpty() || !trades.isEmpty() || !orderBook.isEmpty() || !klines.isEmpty();
+    return !ticker.isEmpty() || !trades.isEmpty() || !orderBook.isEmpty() || !fundingRates.isEmpty();
   }
 
   public static ProductSubscriptionBuilder create() {
     return new ProductSubscriptionBuilder();
   }
 
-  public List<WrapCurrency> getKlines() {
-    return klines;
-  }
-
   public static class ProductSubscriptionBuilder {
     private final Set<Instrument> orderBook;
     private final Set<Instrument> trades;
     private final Set<Instrument> ticker;
-    private final Set<WrapCurrency> klines;
     private final Set<Instrument> userTrades;
     private final Set<Instrument> orders;
+    private final Set<Instrument> fundingRates;
     private final Set<Currency> balances;
 
     private ProductSubscriptionBuilder() {
@@ -101,9 +95,9 @@ public class ProductSubscription {
       trades = new HashSet<>();
       ticker = new HashSet<>();
       orders = new HashSet<>();
+      fundingRates = new HashSet<>();
       userTrades = new HashSet<>();
       balances = new HashSet<>();
-      klines = new HashSet<>();
     }
 
     public ProductSubscriptionBuilder addOrderbook(Instrument pair) {
@@ -126,6 +120,10 @@ public class ProductSubscription {
       return this;
     }
 
+    public ProductSubscriptionBuilder addFundingRates(Instrument pair) {
+      fundingRates.add(pair);
+      return this;
+    }
     public ProductSubscriptionBuilder addUserTrades(Instrument pair) {
       userTrades.add(pair);
       return this;
@@ -136,25 +134,15 @@ public class ProductSubscription {
       return this;
     }
 
-    public ProductSubscriptionBuilder addKlines(WrapCurrency pair) {
-      klines.add(pair);
-      return this;
-    }
-
     public ProductSubscriptionBuilder addAll(Instrument pair) {
       orderBook.add(pair);
       trades.add(pair);
       ticker.add(pair);
       orders.add(pair);
+      fundingRates.add(pair);
       userTrades.add(pair);
-      klines.add(new WrapCurrency(pair, KlineInterval.h1));
-      if (pair instanceof CurrencyPair){
-        balances.add(((CurrencyPair) pair).base);
-        balances.add(((CurrencyPair) pair).counter);
-      }else if (pair instanceof FuturesContract){
-
-      }
-
+      balances.add(pair.getBase());
+      balances.add(pair.getCounter());
       return this;
     }
 

@@ -13,14 +13,9 @@ import org.knowm.xchange.dto.account.Balance;
 import org.knowm.xchange.dto.account.FundingRecord;
 import org.knowm.xchange.dto.account.FundingRecord.Status;
 import org.knowm.xchange.dto.account.Wallet;
-import org.knowm.xchange.dto.marketdata.Kline;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.marketdata.Trades.TradeSortType;
-import org.knowm.xchange.dto.meta.CurrencyMetaData;
-import org.knowm.xchange.dto.meta.CurrencyPairMetaData;
-import org.knowm.xchange.dto.meta.ExchangeMetaData;
-import org.knowm.xchange.dto.meta.FeeTier;
-import org.knowm.xchange.dto.meta.WalletHealth;
+import org.knowm.xchange.dto.meta.*;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.MarketOrder;
 import org.knowm.xchange.dto.trade.OpenOrders;
@@ -32,9 +27,14 @@ import org.knowm.xchange.exceptions.ExchangeException;
 import org.knowm.xchange.huobi.dto.account.HuobiBalanceRecord;
 import org.knowm.xchange.huobi.dto.account.HuobiBalanceSum;
 import org.knowm.xchange.huobi.dto.account.HuobiFundingRecord;
-import org.knowm.xchange.huobi.dto.marketdata.*;
+import org.knowm.xchange.huobi.dto.marketdata.HuobiAllTicker;
+import org.knowm.xchange.huobi.dto.marketdata.HuobiAsset;
+import org.knowm.xchange.huobi.dto.marketdata.HuobiAssetPair;
+import org.knowm.xchange.huobi.dto.marketdata.HuobiCurrency;
+import org.knowm.xchange.huobi.dto.marketdata.HuobiCurrencyWrapper;
+import org.knowm.xchange.huobi.dto.marketdata.HuobiTicker;
 import org.knowm.xchange.huobi.dto.trade.HuobiOrder;
-import org.knowm.xchange.utils.DateUtils;
+import org.knowm.xchange.instrument.Instrument;
 
 public class HuobiAdapters {
   private static final String ONLINE = "allowed";
@@ -90,8 +90,8 @@ public class HuobiAdapters {
     HuobiUtils.setHuobiAssets(assets);
     HuobiUtils.setHuobiAssetPairs(assetPairs);
 
-    Map<CurrencyPair, CurrencyPairMetaData> pairsMetaData = staticMetaData.getCurrencyPairs();
-    Map<CurrencyPair, CurrencyPairMetaData> pairs = new HashMap<>();
+    Map<Instrument, InstrumentMetaData> pairsMetaData = staticMetaData.getInstruments();
+    Map<Instrument, InstrumentMetaData> pairs = new HashMap<>();
     for (HuobiAssetPair assetPair : assetPairs) {
       CurrencyPair pair = adaptCurrencyPair(assetPair.getKey());
       pairs.put(pair, adaptPair(assetPair, pairsMetaData.getOrDefault(pair, null)));
@@ -155,26 +155,21 @@ public class HuobiAdapters {
     return HuobiUtils.translateHuobiCurrencyPair(currencyPair);
   }
 
-  private static CurrencyPairMetaData adaptPair(
-      HuobiAssetPair pair, CurrencyPairMetaData metadata) {
+  private static InstrumentMetaData adaptPair(
+      HuobiAssetPair pair, InstrumentMetaData metadata) {
     BigDecimal minQty =
         metadata == null
             ? null
             : metadata.getMinimumAmount().setScale(pair.getAmountPrecision(), RoundingMode.DOWN);
     FeeTier[] feeTiers = metadata == null ? null : metadata.getFeeTiers();
-    return new CurrencyPairMetaData(
-        fee,
-        minQty,
-        null,
-        null,
-        null,
-            pair.getAmountPrecision(),
-            pair.getPricePrecision(),
-        null,
-        feeTiers,
-        null,
-        null,
-        true);
+    return new InstrumentMetaData.Builder()
+            .tradingFee(fee)
+            .minimumAmount(minQty)
+            .priceScale(pair.getPricePrecision())
+            .volumeScale(pair.getAmountPrecision())
+            .feeTiers(feeTiers)
+            .marketOrderEnabled(true)
+            .build();
   }
 
   private static Currency adaptCurrency(String currency) {
@@ -464,23 +459,5 @@ public class HuobiAdapters {
       default:
         return null;
     }
-  }
-
-  public static List<Kline> adaptKlines(HuobiKline[] klines) {
-     return Arrays.stream(klines)
-            .map(
-              kline ->
-                new Kline.Builder()
-                        .id(kline.getId())
-                        .openTime(DateUtils.fromUnixTime(kline.getId()))
-                        .open(kline.getOpen())
-                        .close(kline.getClose())
-                        .high(kline.getHigh())
-                        .low(kline.getLow())
-                        .amount(kline.getAmount())
-                        .vol(kline.getVol())
-                        .count(kline.getCount())
-              .build())
-            .collect(Collectors.toList());
   }
 }

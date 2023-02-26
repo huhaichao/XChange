@@ -2,13 +2,9 @@ package info.bitrich.xchangestream.core;
 
 import io.reactivex.Observable;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.knowm.xchange.dto.marketdata.OrderBook;
-import org.knowm.xchange.dto.marketdata.Ticker;
-import org.knowm.xchange.dto.marketdata.Trade;
-import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
-import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.dto.marketdata.*;
 import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
+import org.knowm.xchange.instrument.Instrument;
 
 public interface StreamingMarketDataService {
   /**
@@ -49,6 +45,9 @@ public interface StreamingMarketDataService {
   }
 
   default Observable<Ticker> getTicker(Instrument instrument, Object... args) {
+    if (instrument instanceof CurrencyPair) {
+      return getTicker((CurrencyPair) instrument, args);
+    }
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 
@@ -73,19 +72,23 @@ public interface StreamingMarketDataService {
     }
     throw new NotYetImplementedForExchangeException("getTrades");
   }
-  default Observable<Kline> getKlines(Instrument instrument, Object... args) {
-    if(instrument instanceof CurrencyPair) {
-      return getKlines((CurrencyPair) instrument, args);
-    }
-    throw new NotYetImplementedForExchangeException("getTicker");
+
+  /**
+   * Get funding rate of specific instrument.
+   * @param instrument Instrument to get the funding rate for
+   * @return {@link Observable} that emits {@link FundingRate} when exchange sends the update.
+   * */
+
+  default Observable<FundingRate> getFundingRate(Instrument instrument, Object... args) {
+    throw new NotYetImplementedForExchangeException("getFundingRate");
   }
 
-  default  Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
-    throw  new NotYetImplementedForExchangeException("getKlines");
-  }
+  /**
+   * Get funding rates for all instruments of the platform.
+   * @return {@link Observable} that emits {@link FundingRates} when exchange sends the update.
+   * */
 
-
-  default  Observable<Kline> getHistoryKlines(CurrencyPair currencyPair, Object... args){
-    throw  new NotYetImplementedForExchangeException("getKlines");
+  default Observable<FundingRates> getFundingRates() {
+    throw new NotYetImplementedForExchangeException("getFundingRates");
   }
 }

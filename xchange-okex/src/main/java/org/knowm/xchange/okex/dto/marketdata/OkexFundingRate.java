@@ -1,32 +1,37 @@
 package org.knowm.xchange.okex.dto.marketdata;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
-@NoArgsConstructor
+@ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OkexFundingRate {
 
-    @JsonProperty("instType")
-    private String instrumentType;
+    private final String instType;
+    private final String instId;
+    private final BigDecimal fundingRate;
+    private final BigDecimal nextFundingRate;
+    private final Date fundingTime;
+    private final Date nextFundingTime;
 
-    @JsonProperty("instId")
-    private String instrumentId;
-
-    @JsonProperty("fundingRate")
-    private BigDecimal fundingRate;
-
-    @JsonProperty("nextFundingRate")
-    private BigDecimal nextFundingRate;
-
-    @JsonProperty("fundingTime")
-    private Date fundingTime;
-
-    @JsonProperty("nextFundingTime")
-    private Date nextFundingTime;
-
+    public OkexFundingRate(
+            @JsonProperty("instType") String instType,
+            @JsonProperty("instId") String instId,
+            @JsonProperty("fundingRate") BigDecimal fundingRate,
+            @JsonProperty("nextFundingRate") BigDecimal nextFundingRate,
+            @JsonProperty("fundingTime") Date fundingTime,
+            @JsonProperty("nextFundingTime") Date nextFundingTime) {
+        this.instType = instType;
+        this.instId = instId;
+        this.fundingRate = fundingRate;
+        this.nextFundingRate = nextFundingRate;
+        this.fundingTime = fundingTime;
+        this.nextFundingTime = nextFundingTime;
+    }
 }

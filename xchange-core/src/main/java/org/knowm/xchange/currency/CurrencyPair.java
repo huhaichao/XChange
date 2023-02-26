@@ -462,6 +462,16 @@ public class CurrencyPair extends Instrument implements Comparable<CurrencyPair>
     this.counter = Currency.getInstance(counter);
   }
 
+  @Override
+  public Currency getBase() {
+    return base;
+  }
+
+  @Override
+  public Currency getCounter() {
+    return counter;
+  }
+
   @JsonValue
   @Override
   public String toString() {
