@@ -44,4 +44,5 @@ public class KlineBinanceWebSocketTransaction extends ProductBinanceWebSocketTra
     public BinanceKline getBinanceKline() {
         return binanceKline;
     }
+
 }
