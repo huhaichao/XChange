@@ -5,6 +5,7 @@ import info.bitrich.xchangestream.core.StreamingExchangeFactory;
 import info.bitrich.xchangestream.okex.OkexStreamingExchange;
 import info.bitrich.xchangestream.okex.OkexStreamingMarketDataService;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.derivative.FuturesContract;
 import org.knowm.xchange.dto.marketdata.KlineInterval;
 import org.knowm.xchange.instrument.Instrument;
 
@@ -16,11 +17,10 @@ public class OkexStreamingMarketDataServiceExample {
         setUp();
 
         //testGetTrades();
-
-        //testGetTicker();
+        testGetTicker();
 
         //testGetOrderBook();
-        testGetKline();
+        //testGetKline();
         Thread.sleep(5000);
 
         System.exit(0);
@@ -39,14 +39,14 @@ public class OkexStreamingMarketDataServiceExample {
     }
 
     public static  void testGetTicker() throws InterruptedException {
-        Instrument instrument = CurrencyPair.BTC_USDT;
+        Instrument instrument = new FuturesContract("BTC/USD/221230");
         okexStreamingMarketDataService.getTicker(instrument).forEach(System.out::println);
         Thread.sleep(3000);
     }
 
     public static  void testGetKline() throws InterruptedException {
-        Instrument instrument = CurrencyPair.BTC_USDT;
-        okexStreamingMarketDataService.getKlines(instrument, KlineInterval.m1).forEach(System.out::println);
+        Instrument instrument = new FuturesContract("BTC/USD/221230");
+        okexStreamingMarketDataService.getKlines(CurrencyPair.BTC_USDT, KlineInterval.m1).forEach(System.out::println);
         Thread.sleep(3000);
     }
 

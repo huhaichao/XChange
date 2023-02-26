@@ -6,6 +6,7 @@ import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import info.bitrich.xchangestream.core.StreamingTradeService;
 import io.reactivex.Completable;
 import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.ExchangeType;
 import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.okex.OkexExchange;
 
@@ -27,6 +28,11 @@ public class OkexStreamingExchange extends OkexExchange implements StreamingExch
 
     private OkexStreamingTradeService streamingTradeService;
     public OkexStreamingExchange() {}
+
+    @Override
+    public ExchangeType getExchangeType(){
+        return ExchangeType.OKEXSTREAM;
+    }
 
 
     @Override

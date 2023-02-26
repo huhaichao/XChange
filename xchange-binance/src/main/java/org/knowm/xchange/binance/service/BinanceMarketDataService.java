@@ -52,7 +52,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
   public OrderBook getOrderBook(CurrencyPair pair, Object... args) throws IOException {
     try {
 
-      return getOrderBook(pair, args);
+      return getOrderBook((Instrument)pair, args);
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
@@ -98,7 +98,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
   @Override
   public Ticker getTicker(CurrencyPair pair, Object... args) throws IOException {
     try {
-      return getTicker(pair, args);
+      return getTicker((Instrument) pair, args);
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
@@ -138,7 +138,7 @@ public class BinanceMarketDataService extends BinanceMarketDataServiceRaw
   @Override
   public Trades getTrades(CurrencyPair pair, Object... args) throws IOException {
     try {
-      return getTrades(pair, args);
+      return getTrades((Instrument)pair, args);
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }

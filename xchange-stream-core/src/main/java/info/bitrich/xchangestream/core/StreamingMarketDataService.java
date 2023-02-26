@@ -49,9 +49,6 @@ public interface StreamingMarketDataService {
   }
 
   default Observable<Ticker> getTicker(Instrument instrument, Object... args) {
-    if (instrument instanceof CurrencyPair) {
-      return getTicker((CurrencyPair) instrument, args);
-    }
     throw new NotYetImplementedForExchangeException("getTicker");
   }
 

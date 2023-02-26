@@ -5,8 +5,10 @@ import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import info.bitrich.xchangestream.okex.dto.OkexSubscribeMessage;
 import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.reactivex.Observable;
+import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.marketdata.*;
+import org.knowm.xchange.exceptions.NotYetImplementedForExchangeException;
 import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.okex.OkexAdapters;
 import org.knowm.xchange.okex.dto.marketdata.*;
@@ -68,6 +70,11 @@ public class OkexStreamingMarketDataService implements StreamingMarketDataServic
                     List<OkexCandleStick> okexTickers = mapper.treeToValue(jsonNode.get("data"), mapper.getTypeFactory().constructCollectionType(List.class, OkexCandleStick.class));
                     return Observable.fromIterable(okexTickers).map(OkexAdapters::adaptCandles);
                 });
+    }
+
+    @Override
+    public  Observable<Kline> getKlines(CurrencyPair currencyPair, Object... args){
+        return getKlines((Instrument)currencyPair, args);
     }
 
     @Override

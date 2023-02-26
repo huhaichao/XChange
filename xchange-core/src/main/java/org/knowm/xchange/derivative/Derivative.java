@@ -4,4 +4,6 @@ import org.knowm.xchange.currency.CurrencyPair;
 
 public interface Derivative {
   CurrencyPair getCurrencyPair();
+
+
 }

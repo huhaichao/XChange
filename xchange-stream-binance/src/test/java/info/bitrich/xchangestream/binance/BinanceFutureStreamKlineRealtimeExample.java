@@ -5,6 +5,7 @@ import info.bitrich.xchangestream.core.StreamingExchangeFactory;
 import info.bitrich.xchangestream.dto.WrapCurrency;
 import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.derivative.FuturesContract;
 import org.knowm.xchange.dto.marketdata.KlineInterval;
 
 public class BinanceFutureStreamKlineRealtimeExample {
@@ -16,24 +17,25 @@ public class BinanceFutureStreamKlineRealtimeExample {
     BinanceCoinFutureStreamingExchange exchange =(BinanceCoinFutureStreamingExchange)
         StreamingExchangeFactory.INSTANCE.createExchange(exchangeSpecification);
     ProductSubscription subscription = ProductSubscription.create()
-            //.addKlines(new WrapCurrency(new CurrencyPair("BTC/USD_221230"), KlineInterval.m1,null))
+            //.addKlines(new WrapCurrency(new CurrencyPair("ETH/USD_221230"), KlineInterval.m1,null))
             //.addKlines(new WrapCurrency(new CurrencyPair("ETH/USD_perp"), KlineInterval.m1,null))
-            .addTicker(new CurrencyPair("BTC/USD_221230"))
+            //.addTicker(new CurrencyPair("ETH/USD_221230"))
+            .addTicker(new FuturesContract("ETH/USD/221230"))
             .build();
     exchange.connect(subscription).blockingAwait();
-   /* exchange
+   /*exchange
         .getStreamingMarketDataService()
-        .getKlines(new CurrencyPair("BTC/USD_221230)"),KlineInterval.m1, null)
-        .subscribe(System.out::println);
+        .getTicker(new CurrencyPair("ETH/USD_221230)"))
+        .subscribe(System.out::println);*/
 
-    exchange
+     /*exchange
             .getStreamingMarketDataService()
             .getKlines(new CurrencyPair("ETH/USD_perp"),KlineInterval.m1, null)
             .subscribe(System.out::println);*/
 
     exchange
             .getStreamingMarketDataService()
-            .getTicker(new CurrencyPair("BTC/USD_221230"))
+            .getTicker(new FuturesContract("ETH/USD/221230"))
             .subscribe(System.out::println);
     exchange.enableLiveSubscription();
 

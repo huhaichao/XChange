@@ -2,16 +2,17 @@ package info.bitrich.xchangestream.dto;
 
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.KlineInterval;
+import org.knowm.xchange.instrument.Instrument;
 
 public class WrapCurrency {
 
-    private final CurrencyPair currencyPair;
+    private final Instrument currencyPair;
 
     private final String contractType;
 
     private final KlineInterval klineInterval;
 
-    public WrapCurrency(CurrencyPair currencyPair, KlineInterval klineInterval) {
+    public WrapCurrency(Instrument currencyPair, KlineInterval klineInterval) {
         this.currencyPair = currencyPair;
         this.klineInterval = klineInterval;
         this.contractType = null;
@@ -27,7 +28,7 @@ public class WrapCurrency {
         return klineInterval;
     }
 
-    public CurrencyPair getCurrencyPair() {
+    public Instrument getCurrencyPair() {
         return currencyPair;
     }
 
@@ -43,6 +44,7 @@ public class WrapCurrency {
             return false;
         }
         WrapCurrency wrapCurrency = (WrapCurrency) obj;
+
         if (this.contractType == null){
             return this.currencyPair.equals(wrapCurrency.getCurrencyPair())
                     && this.klineInterval.equals(wrapCurrency.getKlineInterval());

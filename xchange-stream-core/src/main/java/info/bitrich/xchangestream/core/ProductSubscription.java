@@ -9,19 +9,21 @@ import java.util.Set;
 import info.bitrich.xchangestream.dto.WrapCurrency;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.derivative.FuturesContract;
 import org.knowm.xchange.dto.marketdata.KlineInterval;
+import org.knowm.xchange.instrument.Instrument;
 
 /**
  * Use to specify subscriptions during the connect phase For instancing, use builder @link {@link
  * ProductSubscriptionBuilder}
  */
 public class ProductSubscription {
-  private final List<CurrencyPair> orderBook;
-  private final List<CurrencyPair> trades;
-  private final List<CurrencyPair> ticker;
+  private final List<Instrument> orderBook;
+  private final List<Instrument> trades;
+  private final List<Instrument> ticker;
   private final List<WrapCurrency> klines;
-  private final List<CurrencyPair> userTrades;
-  private final List<CurrencyPair> orders;
+  private final List<Instrument> userTrades;
+  private final List<Instrument> orders;
   private final List<Currency> balances;
 
 
@@ -41,23 +43,23 @@ public class ProductSubscription {
     return Collections.unmodifiableList(result);
   }
 
-  public List<CurrencyPair> getOrderBook() {
+  public List<Instrument> getOrderBook() {
     return orderBook;
   }
 
-  public List<CurrencyPair> getTrades() {
+  public List<Instrument> getTrades() {
     return trades;
   }
 
-  public List<CurrencyPair> getTicker() {
+  public List<Instrument> getTicker() {
     return ticker;
   }
 
-  public List<CurrencyPair> getOrders() {
+  public List<Instrument> getOrders() {
     return orders;
   }
 
-  public List<CurrencyPair> getUserTrades() {
+  public List<Instrument> getUserTrades() {
     return userTrades;
   }
 
@@ -86,12 +88,12 @@ public class ProductSubscription {
   }
 
   public static class ProductSubscriptionBuilder {
-    private final Set<CurrencyPair> orderBook;
-    private final Set<CurrencyPair> trades;
-    private final Set<CurrencyPair> ticker;
+    private final Set<Instrument> orderBook;
+    private final Set<Instrument> trades;
+    private final Set<Instrument> ticker;
     private final Set<WrapCurrency> klines;
-    private final Set<CurrencyPair> userTrades;
-    private final Set<CurrencyPair> orders;
+    private final Set<Instrument> userTrades;
+    private final Set<Instrument> orders;
     private final Set<Currency> balances;
 
     private ProductSubscriptionBuilder() {
@@ -104,27 +106,27 @@ public class ProductSubscription {
       klines = new HashSet<>();
     }
 
-    public ProductSubscriptionBuilder addOrderbook(CurrencyPair pair) {
+    public ProductSubscriptionBuilder addOrderbook(Instrument pair) {
       orderBook.add(pair);
       return this;
     }
 
-    public ProductSubscriptionBuilder addTrades(CurrencyPair pair) {
+    public ProductSubscriptionBuilder addTrades(Instrument pair) {
       trades.add(pair);
       return this;
     }
 
-    public ProductSubscriptionBuilder addTicker(CurrencyPair pair) {
+    public ProductSubscriptionBuilder addTicker(Instrument pair) {
       ticker.add(pair);
       return this;
     }
 
-    public ProductSubscriptionBuilder addOrders(CurrencyPair pair) {
+    public ProductSubscriptionBuilder addOrders(Instrument pair) {
       orders.add(pair);
       return this;
     }
 
-    public ProductSubscriptionBuilder addUserTrades(CurrencyPair pair) {
+    public ProductSubscriptionBuilder addUserTrades(Instrument pair) {
       userTrades.add(pair);
       return this;
     }
@@ -139,15 +141,20 @@ public class ProductSubscription {
       return this;
     }
 
-    public ProductSubscriptionBuilder addAll(CurrencyPair pair) {
+    public ProductSubscriptionBuilder addAll(Instrument pair) {
       orderBook.add(pair);
       trades.add(pair);
       ticker.add(pair);
       orders.add(pair);
       userTrades.add(pair);
       klines.add(new WrapCurrency(pair, KlineInterval.h1));
-      balances.add(pair.base);
-      balances.add(pair.counter);
+      if (pair instanceof CurrencyPair){
+        balances.add(((CurrencyPair) pair).base);
+        balances.add(((CurrencyPair) pair).counter);
+      }else if (pair instanceof FuturesContract){
+
+      }
+
       return this;
     }
 

@@ -43,7 +43,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
   }
 
   public BinanceOrderbook getBinanceOrderbook(CurrencyPair pair, Integer limit) throws IOException {
-    return getBinanceOrderbook(pair, limit);
+    return getBinanceOrderbook((Instrument)pair, limit);
   }
 
   public BinanceOrderbook getBinanceOrderbook(Instrument pair, Integer limit) throws IOException {
@@ -56,7 +56,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
   public List<BinanceAggTrades> aggTrades(
       CurrencyPair pair, Long fromId, Long startTime, Long endTime, Integer limit)
       throws IOException {
-    return aggTrades(pair, fromId, startTime, endTime, limit);
+    return aggTrades((Instrument)pair, fromId, startTime, endTime, limit);
   }
 
   public List<BinanceAggTrades> aggTrades(
@@ -82,7 +82,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
   public List<BinanceKline> klines(
           CurrencyPair pair, KlineInterval interval, Integer limit, Long startTime, Long endTime)
       throws IOException {
-      return klines(pair, interval, limit, startTime, endTime);
+      return klines((Instrument)pair, interval, limit, startTime, endTime);
   }
 
   public List<BinanceKline> klines(
@@ -110,7 +110,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
   }
 
   public BinanceTicker24h ticker24h(CurrencyPair pair) throws IOException {
-    return ticker24h(pair);
+    return ticker24h((Instrument)pair);
   }
 
   public BinanceTicker24h ticker24h(Instrument pair) throws IOException {
@@ -126,7 +126,7 @@ public class BinanceMarketDataServiceRaw extends BinanceBaseService {
   }
 
   public BinancePrice tickerPrice(CurrencyPair pair) throws IOException {
-    return tickerPrice(pair);
+    return tickerPrice((Instrument)pair);
   }
 
   public BinancePrice tickerPrice(Instrument pair) throws IOException {

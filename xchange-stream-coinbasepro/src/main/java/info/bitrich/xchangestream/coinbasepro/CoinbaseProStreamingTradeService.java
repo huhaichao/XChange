@@ -13,6 +13,7 @@ import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.trade.UserTrade;
 import org.knowm.xchange.dto.trade.UserTrades;
 import org.knowm.xchange.exceptions.ExchangeSecurityException;
+import org.knowm.xchange.instrument.Instrument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +29,8 @@ public class CoinbaseProStreamingTradeService implements StreamingTradeService {
     this.service = service;
   }
 
-  private boolean containsPair(List<CurrencyPair> pairs, CurrencyPair pair) {
-    for (CurrencyPair item : pairs) {
-      if (item.compareTo(pair) == 0) {
-        return true;
-      }
-    }
-
-    return false;
+  private boolean containsPair(List<Instrument> pairs, CurrencyPair pair) {
+    return pairs.stream().anyMatch(p -> p.equals(pair));
   }
 
   @Override
